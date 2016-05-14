@@ -1,10 +1,9 @@
-# Ruby additons
-
-# my additions
+# My additions
 require_relative "lib/characters"
 require_relative "lib/character_actions"
 require_relative "lib/zones"
 require_relative "lib/modules"
+require_relative "lib/items"
 include TextBlocks
 include Action
 
