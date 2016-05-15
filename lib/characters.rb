@@ -1,20 +1,21 @@
-require_relative "zones"
+require_relative 'zones'
 
 class Character
-  #include Fighting; include Movement; include Talking; include Skills
+  # include Fighting; include Movement; include Talking; include Skills
 end
 
 class Player < Character
   require_relative 'items'
-  #include Exp
+  # include Exp
   def initialize(name)
-    @name = name.capitalize; @lvl = 1
+    @name = name.capitalize
+    @lvl = 1
     @max_hp = 100; @hp = @max_hp
-    @base_dmg_min = 3; @base_dmg_max = 8;
+    @base_dmg_min = 3; @base_dmg_max = 8
     @evasion = 20; @evade_chance = rand(1..@evasion)
-    @accuracy = 70; @hit_chance = rand(1..@accuracy)
-    @skills = Array.new
-    @weapon = Weapon.new("Handmade Dagger",2)
+    @accuracy = 70;  @hit_chance = rand(1..@accuracy)
+    @skills = []
+    @weapon = Weapon.new('Handmade Dagger',2)
     @dmg_min = @base_dmg_min + @weapon.dmg_increase; @dmg_max = @base_dmg_max + @weapon.dmg_increase
     @dmg = rand(@dmg_min..@dmg_max)
     @items = [HealthPotion.new("Small Health Potion",20)]
