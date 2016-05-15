@@ -9,6 +9,8 @@ class Player < Character
   def initialize(name)
     @name = name.capitalize
     @lvl = 1
+    $current_zone = StartZone.new
+    @location = $current_zone.name
     @max_hp = 100; @hp = @max_hp
     @base_dmg_min = 3; @base_dmg_max = 8
     @evasion = 20; @evade_chance = rand(1..@evasion)
@@ -45,10 +47,14 @@ class Player < Character
     end
   end
   def move()
-    puts "\nNot working yet. Told ya."
     # TODO: Move method
+    puts "Your current location: #{$player.location}"
+    sleep(1.5)
+    $current_zone = ZoneGenerator.new.generated_zone
+    $player.location = $current_zone.name
+    puts "Your character wanders along... Until he sees #{$current_zone.desc}."
   end
-  attr_reader :name; attr_accessor :lvl; attr_accessor :hp; attr_accessor :max_hp; attr_accessor :dmg_min; attr_accessor :dmg_max; attr_accessor :dmg; attr_accessor :evasion; attr_accessor :accuracy; attr_reader :skills; attr_accessor :items
+  attr_reader :name; attr_accessor :lvl; attr_accessor :location; attr_accessor :hp; attr_accessor :max_hp; attr_accessor :dmg_min; attr_accessor :dmg_max; attr_accessor :dmg; attr_accessor :evasion; attr_accessor :accuracy; attr_reader :skills; attr_accessor :items
 end
 
 class Enemy < Character
@@ -64,6 +70,22 @@ class Ghost < Enemy
     @evasion = 60; @evade_chance = rand(1..@evasion)
     @accuracy = 30; @hit_chance = rand(1..@accuracy)
     @skills = ["Crippling Fear"]
+  end
+  attr_reader :name; attr_accessor :lvl; attr_accessor :hp
+  attr_accessor :dmg_min; attr_accessor :dmg_max; attr_accessor :dmg
+  attr_accessor :evasion; attr_accessor :accuracy; attr_reader :skills
+  attr_reader :appear_chance
+end
+
+class Ghoul < Enemy
+  @@appear_chance = 40
+  def initialize
+    @name = "Ghoul"
+    @max_hp = rand(9..11); @hp = @max_hp
+    @dmg_min = 7; @dmg_max = 11; @dmg = rand(@dmg_min..@dmg_max)
+    @evasion = 15; @evade_chance = rand(1..@evasion)
+    @accuracy = 65; @hit_chance = rand(1..@accuracy)
+    @skills = []
   end
   attr_reader :name; attr_accessor :lvl; attr_accessor :hp
   attr_accessor :dmg_min; attr_accessor :dmg_max; attr_accessor :dmg
