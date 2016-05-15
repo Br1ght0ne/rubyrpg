@@ -20,26 +20,28 @@ module TextBlocks
 end
 
 module Action
-  def get_player_action(player)
+  def get_player_action()
     puts "\nWhat do you want to do?\nd - display information about you | i - inspect your items | m - move to some location (ACHTUNG: not yet implemented) | t - TERMINATE GAME"
     user_action = gets.chomp
     case user_action
     when "d"
-      player.display_player_info(player)
+      $player.display_player_info()
       sleep(2)
-      get_player_action(player)
+      get_player_action()
     when "i"
-      player.inspect_items(player)
+      $player.inspect_items()
       sleep(2)
-      get_player_action(player)
+      get_player_action()
     when "m"
-      player.move(player)
+      $player.move()
       sleep(2)
-      get_player_action(player)
+      get_player_action()
     when "t"
       puts "\nTerminating game... Farewell!"
       sleep(1)
       exit
+    else
+      get_player_action
     end
   end
 end

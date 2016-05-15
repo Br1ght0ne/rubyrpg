@@ -5,7 +5,6 @@ class Character
 end
 
 class Player < Character
-  require_relative 'items'
   # include Exp
   def initialize(name)
     @name = name.capitalize
@@ -18,28 +17,38 @@ class Player < Character
     @weapon = Weapon.new('Handmade Dagger',2)
     @dmg_min = @base_dmg_min + @weapon.dmg_increase; @dmg_max = @base_dmg_max + @weapon.dmg_increase
     @dmg = rand(@dmg_min..@dmg_max)
-    @items = [HealthPotion.new("Small Health Potion",20)]
+    @items = [SmallHealthPotion.new]
   end
 
-  def display_player_info(player)
-    puts "\nDisplaying info for #{player.class}: #{player.name}..."
+  def display_player_info()
+    puts "\nDisplaying info for #{$player.class}: #{$player.name}..."
     sleep(0.5)
-    puts "\nName: #{player.name}\nLevel: #{player.lvl}\nHP: #{player.hp}/#{player.max_hp}\nDamage: #{player.dmg_min}-#{player.dmg_max} (including #{@weapon.dmg_increase} from #{@weapon.name})\nEvasion: #{player.evasion}\nAccuracy: #{player.accuracy}"
+    puts "\nName: #{$player.name}\nLevel: #{$player.lvl}\nHP: #{$player.hp}/#{$player.max_hp}\nDamage: #{$player.dmg_min}-#{$player.dmg_max} (including #{@weapon.dmg_increase} from #{@weapon.name})\nEvasion: #{$player.evasion}\nAccuracy: #{$player.accuracy}"
   end
-  def inspect_items(player)
-    puts "\nInspecting items of #{player.class}: #{player.name}..."
+  def inspect_items()
+    puts "\nInspecting items of #{$player.class}: #{$player.name}..."
     sleep(1)
     puts "\nWeapon:\n#{@weapon.name} - increases damage dealt by #{@weapon.dmg_increase}"
-    puts "\nItems:\n#{@items[0].name} - #{@items[0].desc}"
+    puts "\nItems:"
+    i = 0
+    loop do
+      break if $player.items[i].class == NilClass
+      puts "#{$player.items[i].name}(#{$player.items[i].code}) - #{@items[i].desc}" if $player.items[i].class != NilClass
+      i += 1
+    end
+    puts "Type the code of the item you want to use (or 'exit' to quit items)"
+    i = gets.chomp; i.upcase!
+    if i == "EXIT"
+      get_player_action
+    else
+      # TODO: Item use
+    end
   end
-  def move(player)
+  def move()
     puts "\nNot working yet. Told ya."
-    #@destinations = Array.new
-    #@destinations.push(rand(Zone.class_variable_get(:@@zones_names))
-    #@destinations.push(rand(Zone.class_variable_get(:@@zones_names))
-    #puts "#{@destinations[0]} | #{@destinations[1]}"
+    # TODO: Move method
   end
-  attr_reader :name; attr_accessor :lvl; attr_accessor :hp; attr_accessor :max_hp; attr_accessor :dmg_min; attr_accessor :dmg_max; attr_accessor :dmg; attr_accessor :evasion; attr_accessor :accuracy; attr_reader :skills
+  attr_reader :name; attr_accessor :lvl; attr_accessor :hp; attr_accessor :max_hp; attr_accessor :dmg_min; attr_accessor :dmg_max; attr_accessor :dmg; attr_accessor :evasion; attr_accessor :accuracy; attr_reader :skills; attr_accessor :items
 end
 
 class Enemy < Character

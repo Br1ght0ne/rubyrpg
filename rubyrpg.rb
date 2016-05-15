@@ -7,12 +7,13 @@ require_relative 'lib/items'
 include TextBlocks
 include Action
 
+start
 sleep(2)
 
 puts "\nEnter the name for your character:"
 name = gets.chomp.capitalize
-player = Player.new(name)
-puts "\nLet's start your adventure, #{player.name}!\n"
+$player = Player.new(name)
+puts "\nLet's start your adventure, #{$player.name}!\n"
 sleep(1.5)
 
-get_player_action(player)
+get_player_action()
