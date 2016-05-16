@@ -1,5 +1,5 @@
 require_relative 'zones'
-
+require_relative 'modules'
 class Character
   # include Fighting; include Movement; include Talking; include Skills
 end
@@ -24,7 +24,7 @@ class Player < Character
 
   def display_player_info()
     puts "\nDisplaying info for #{$player.class}: #{$player.name}..."
-    sleep(0.5)
+    sleep(1)
     puts "\nName: #{$player.name}\nLevel: #{$player.lvl}\nHP: #{$player.hp}/#{$player.max_hp}\nDamage: #{$player.dmg_min}-#{$player.dmg_max} (including #{@weapon.dmg_increase} from #{@weapon.name})\nEvasion: #{$player.evasion}\nAccuracy: #{$player.accuracy}"
   end
   def inspect_items()
@@ -47,22 +47,25 @@ class Player < Character
     end
   end
   def move()
-    # TODO: Move method
-    puts "Your current location: #{$player.location}"
+    puts "\nYour current location: #{$player.location}"
     sleep(1.5)
     $current_zone = ZoneGenerator.new.generated_zone
     $player.location = $current_zone.name
-    puts "Your character wanders along... Until he sees #{$current_zone.desc}."
+    puts "\nYour character wanders along... Until he sees #{$current_zone.desc}."
+    $current_zone.check_for_enemy($current_zone.enemy_name)
   end
   attr_reader :name; attr_accessor :lvl; attr_accessor :location; attr_accessor :hp; attr_accessor :max_hp; attr_accessor :dmg_min; attr_accessor :dmg_max; attr_accessor :dmg; attr_accessor :evasion; attr_accessor :accuracy; attr_reader :skills; attr_accessor :items
 end
 
 class Enemy < Character
-  #include Drop
+  public
+  def spawn
+    puts "A fearsome #{@name} stands on your way! Engaging in fight..."
+    sleep(1.5)
+  end
 end
 
 class Ghost < Enemy
-  @@appear_chance = 80
   def initialize()
     @name = "Ghost"
     @max_hp = rand(5..15); @hp = @max_hp
@@ -71,14 +74,11 @@ class Ghost < Enemy
     @accuracy = 30; @hit_chance = rand(1..@accuracy)
     @skills = ["Crippling Fear"]
   end
-  attr_reader :name; attr_accessor :lvl; attr_accessor :hp
-  attr_accessor :dmg_min; attr_accessor :dmg_max; attr_accessor :dmg
-  attr_accessor :evasion; attr_accessor :accuracy; attr_reader :skills
-  attr_reader :appear_chance
+  attr_reader :name, :skills, :appear_chance
+  attr_accessor :lvl, :hp, :dmg_min, :dmg_max, :dmg, :evasion, :accuracy
 end
 
 class Ghoul < Enemy
-  @@appear_chance = 40
   def initialize
     @name = "Ghoul"
     @max_hp = rand(9..11); @hp = @max_hp
@@ -90,5 +90,32 @@ class Ghoul < Enemy
   attr_reader :name; attr_accessor :lvl; attr_accessor :hp
   attr_accessor :dmg_min; attr_accessor :dmg_max; attr_accessor :dmg
   attr_accessor :evasion; attr_accessor :accuracy; attr_reader :skills
-  attr_reader :appear_chance
+end
+
+class Dragon < Enemy
+  def initialize
+    @name = "Dragon"
+    @max_hp = rand(15..24); @hp = @max_hp
+    @dmg_min = 12; @dmg_max = 15; @dmg = rand(@dmg_min..@dmg_max)
+    @evasion = 10; @evade_chance = rand(1..@evasion)
+    @accuracy = 40; @hit_chance = rand(1..@accuracy)
+    @skills = ["Breathe Fire"]
+  end
+  attr_reader :name; attr_accessor :lvl; attr_accessor :hp
+  attr_accessor :dmg_min; attr_accessor :dmg_max; attr_accessor :dmg
+  attr_accessor :evasion; attr_accessor :accuracy; attr_reader :skills
+end
+
+class Vampire < Enemy
+  def initialize
+    @name = "Vampire"
+    @max_hp = rand(8..14); @hp = @max_hp
+    @dmg_min = 8; @dmg_max = 12; @dmg = rand(@dmg_min..@dmg_max)
+    @evasion = 30; @evade_chance = rand(1..@evasion)
+    @accuracy = 80; @hit_chance = rand(1..@accuracy)
+    @skills = ["Ritual of Blood Moon", "Invisibility"]
+  end
+  attr_reader :name; attr_accessor :lvl; attr_accessor :hp
+  attr_accessor :dmg_min; attr_accessor :dmg_max; attr_accessor :dmg
+  attr_accessor :evasion; attr_accessor :accuracy; attr_reader :skills
 end
