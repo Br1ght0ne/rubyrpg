@@ -12,7 +12,7 @@ end
 
 class ZoneGenerator
   def initialize
-    @@zones = [Graveyard.new, Forest.new]#, Cave.new, Castle.new]
+    @@zones = [Graveyard.new, Forest.new, Cave.new, Castle.new]
     @generated_zone = @@zones.sample
     while @generated_zone.class == $current_zone.class
       @generated_zone = @@zones.sample
@@ -28,7 +28,7 @@ class StartZone < Zone
   attr_reader :name
 end
 
-# TODO: появление энеми
+# REVIEW: enemy encounter
 
 class Graveyard < Zone
   @@graveyard_count = 0
@@ -56,7 +56,7 @@ class Cave < Zone
   @@cave_count = 0
   def initialize
     @@cave_count +=1; @cave_number = @@cave_count
-    @enemy_name = :Dragon
+    @enemy_name = "Dragon"
     @name = "Cave"; @code = "CV#{@cave_number}"
     @desc = "a deep cave"
   end
@@ -67,7 +67,7 @@ class Castle < Zone
   @@castle_count = 0
   def initialize
     @@castle_count +=1; @castle_number = @@castle_count
-    @enemy_name = :Vampire
+    @enemy_name = "Vampire"
     @name = "Castle"; @code = "CS#{@cave_number}"
     @desc = "an ancient castle"
   end

@@ -16,9 +16,6 @@ module TextBlocks
     puts "  #  # #    ####  "
     puts "\n"
     puts "Welcome to #{$game_name} #{$game_version} #{$game_version_tag}! \n"
-
-    $enemy_appear_chance = Hash["Ghost" => 80, "Ghoul" => 40]
-    $enemy_class = Hash["Ghost" => Ghost, "Ghoul" => Ghoul]
   end
 end
 
