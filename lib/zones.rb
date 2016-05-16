@@ -1,10 +1,18 @@
 require_relative "characters"
+require_relative "modules"
 class Zone
+  public
+  def check_for_enemy(enemy_name)
+    if rand(1..100) <= $enemy_appear_chance[enemy_name]
+      $enemy = $enemy_class[enemy_name].new
+      $enemy.spawn
+    end
+  end
 end
 
 class ZoneGenerator
   def initialize
-    @@zones = [Graveyard.new, Forest.new, Cave.new, Castle.new]
+    @@zones = [Graveyard.new, Forest.new]#, Cave.new, Castle.new]
     @generated_zone = @@zones.sample
     while @generated_zone.class == $current_zone.class
       @generated_zone = @@zones.sample
@@ -26,50 +34,42 @@ class Graveyard < Zone
   @@graveyard_count = 0
   def initialize
     @@graveyard_count += 1; @graveyard_number = @@graveyard_count
+    @enemy_name = "Ghost"
     @name = "Graveyard"; @code = "GR#{@graveyard_number}"
     @desc = "an old graveyard"
-    # FIXME: @ghost_appear = true if rand(1..100) <= Ghost.@@appear_chance
-    # FIXME: Ghost.new if @ghost_appear == true
   end
-  attr_reader :name; attr_reader :graveyard_number; attr_reader :code; attr_reader :desc
-  # FIXME: attr_reader :ghost_appear
+  attr_reader :name, :graveyard_number, :code, :desc, :enemy_name
 end
 
 class Forest < Zone
   @@forest_count = 0
   def initialize
     @@forest_count +=1; @forest_number = @@forest_count
+    @enemy_name = "Ghoul"
     @name = "Forest"; @code = "FO#{@forest_number}"
     @desc = "a thick forest"
-    # FIXME: @ghoul_appear = true if rand(1..100) <=  Ghoul.@@appear_chance
-    # FIXME: Ghoul.new if @ghoul_appear == true
   end
-  attr_reader :name, :forest_number, :code, :desc
-  # FIXME: attr_reader :ghoul_appear
+  attr_reader :name, :forest_number, :code, :desc, :enemy_name
 end
 
 class Cave < Zone
   @@cave_count = 0
   def initialize
     @@cave_count +=1; @cave_number = @@cave_count
+    @enemy_name = :Dragon
     @name = "Cave"; @code = "CV#{@cave_number}"
     @desc = "a deep cave"
-    # FIXME: @ghoul_appear = true if rand(1..100) <=  Ghoul.@@appear_chance
-    # FIXME: Ghoul.new if @ghoul_appear == true
   end
-  attr_reader :name, :cave_number, :code, :desc
-  # FIXME: attr_reader :ghoul_appear
+  attr_reader :name, :cave_number, :code, :desc, :enemy_name
 end
 
 class Castle < Zone
   @@castle_count = 0
   def initialize
     @@castle_count +=1; @castle_number = @@castle_count
+    @enemy_name = :Vampire
     @name = "Castle"; @code = "CS#{@cave_number}"
     @desc = "an ancient castle"
-    # FIXME: @ghoul_appear = true if rand(1..100) <=  Ghoul.@@appear_chance
-    # FIXME: Ghoul.new if @ghoul_appear == true
   end
-  attr_reader :name, :castle_number, :code, :desc
-  # FIXME: attr_reader :ghoul_appear
+  attr_reader :name, :castle_number, :code, :desc, :enemy_name
 end

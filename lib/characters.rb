@@ -1,5 +1,5 @@
 require_relative 'zones'
-
+require_relative 'modules'
 class Character
   # include Fighting; include Movement; include Talking; include Skills
 end
@@ -53,16 +53,19 @@ class Player < Character
     $current_zone = ZoneGenerator.new.generated_zone
     $player.location = $current_zone.name
     puts "Your character wanders along... Until he sees #{$current_zone.desc}."
+    $current_zone.check_for_enemy($current_zone.enemy_name)
   end
   attr_reader :name; attr_accessor :lvl; attr_accessor :location; attr_accessor :hp; attr_accessor :max_hp; attr_accessor :dmg_min; attr_accessor :dmg_max; attr_accessor :dmg; attr_accessor :evasion; attr_accessor :accuracy; attr_reader :skills; attr_accessor :items
 end
 
 class Enemy < Character
-  #include Drop
+  public
+  def spawn
+    puts "A fearsome #{@name} stands on your way! Engaging in fight..."
+  end
 end
 
 class Ghost < Enemy
-  @@appear_chance = 80
   def initialize()
     @name = "Ghost"
     @max_hp = rand(5..15); @hp = @max_hp
@@ -71,14 +74,11 @@ class Ghost < Enemy
     @accuracy = 30; @hit_chance = rand(1..@accuracy)
     @skills = ["Crippling Fear"]
   end
-  attr_reader :name; attr_accessor :lvl; attr_accessor :hp
-  attr_accessor :dmg_min; attr_accessor :dmg_max; attr_accessor :dmg
-  attr_accessor :evasion; attr_accessor :accuracy; attr_reader :skills
-  attr_reader :appear_chance
+  attr_reader :name, :skills, :appear_chance
+  attr_accessor :lvl, :hp, :dmg_min, :dmg_max, :dmg, :evasion, :accuracy
 end
 
 class Ghoul < Enemy
-  @@appear_chance = 40
   def initialize
     @name = "Ghoul"
     @max_hp = rand(9..11); @hp = @max_hp
