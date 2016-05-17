@@ -1,3 +1,2 @@
-"s"
-"Test"
-"t"
+Test
+t
