@@ -1,14 +1,23 @@
 require_relative 'zones'
 require_relative 'modules'
+
+module Exp
+  def check_for_new_level
+
+  end
+end
+
 class Character
+  include Exp
   # include Fighting; include Movement; include Talking; include Skills
 end
 
 class Player < Character
-  # include Exp
   def initialize(name)
     @name = name.capitalize
-    @lvl = 1
+    @exp = 0; @lvl = $exp_levels.select {|exp| exp === @exp }.values.first
+    @next_lvl = @lvl + 1; @next_level_exp = $exp_levels.key(@next_lvl).begin.to_i
+    @to_next_level = @next_level_exp - @exp
     $current_zone = StartZone.new
     @location = $current_zone.name
     @max_hp = 100; @hp = @max_hp
@@ -24,7 +33,7 @@ class Player < Character
   def display_player_info()
     puts "\nDisplaying info for #{$player.class}: #{$player.name}..."
     sleep(1)
-    puts "\nName: #{$player.name}\nLevel: #{$player.lvl}\nHP: #{$player.hp}/#{$player.max_hp}\nDamage: #{$player.dmg_min}-#{$player.dmg_max} (including #{@weapon.dmg_increase} from #{@weapon.name})\nEvasion: #{$player.evasion}\nAccuracy: #{$player.accuracy}"
+    puts "\nName: #{@name}\nLevel: #{@lvl} (#{@to_next_level} to next level)\nHP: #{@hp}/#{@max_hp}\nDamage: #{@dmg_min}-#{@dmg_max} (including #{@weapon.dmg_increase} from #{@weapon.name})\nEvasion: #{@evasion}\nAccuracy: #{@accuracy}"
   end
   def inspect_items()
     puts "\nInspecting items of #{$player.class}: #{$player.name}..."
@@ -65,9 +74,21 @@ class Player < Character
     sleep(1.5)
     if $enemy.hp == 0
       puts "\nYou defeated #{$enemy.name}!"
+      @old_lvl = @lvl
+      @exp += $enemy.exp
+      @lvl = $exp_levels.select {|exp| exp === @exp }.values.first
+      @next_lvl = @lvl + 1; @next_level_exp = $exp_levels.key(@next_lvl).begin
+      @to_next_level = @next_level_exp - @exp
+      puts "Gained #{$enemy.exp} experience (#{@to_next_level} to next level)."
+      check_for_level_change
       $enemy = nil; $isFight = false
     else
       $enemy.send(:attack_player)
+    end
+  end
+  def check_for_level_change
+    if @lvl > @old_lvl
+      puts "\nLevel gained!\nYour level is now #{@lvl}."
     end
   end
   attr_reader :name; attr_accessor :lvl; attr_accessor :location; attr_accessor :hp; attr_accessor :max_hp; attr_accessor :dmg_min; attr_accessor :dmg_max; attr_accessor :dmg; attr_accessor :evasion; attr_accessor :accuracy; attr_reader :skills; attr_accessor :items
@@ -98,13 +119,15 @@ class Enemy < Character
       check_for_restart
     end
   end
+  attr_reader :exp
 end
 
 class Ghost < Enemy
   def initialize()
     @name = "Ghost"
     @max_hp = rand(5..15); @hp = @max_hp
-    @dmg_min = 2; @dmg_max = 5; @dmg = rand(@dmg_min..@dmg_max)
+    @exp = rand(4..8)
+    @dmg_min = 2; @dmg_max = 5
     @evasion = 60; @evade_chance = rand(1..@evasion)
     @accuracy = 30; @hit_chance = rand(1..@accuracy)
     @skills = ["Crippling Fear"]
@@ -117,6 +140,7 @@ class Ghoul < Enemy
   def initialize
     @name = "Ghoul"
     @max_hp = rand(9..11); @hp = @max_hp
+    @exp = rand(6..10)
     @dmg_min = 7; @dmg_max = 11; @dmg = rand(@dmg_min..@dmg_max)
     @evasion = 15; @evade_chance = rand(1..@evasion)
     @accuracy = 65; @hit_chance = rand(1..@accuracy)
@@ -131,6 +155,7 @@ class Dragon < Enemy
   def initialize
     @name = "Dragon"
     @max_hp = rand(15..24); @hp = @max_hp
+    @exp = rand(11..16)
     @dmg_min = 12; @dmg_max = 15; @dmg = rand(@dmg_min..@dmg_max)
     @evasion = 10; @evade_chance = rand(1..@evasion)
     @accuracy = 40; @hit_chance = rand(1..@accuracy)
@@ -145,6 +170,7 @@ class Vampire < Enemy
   def initialize
     @name = "Vampire"
     @max_hp = rand(8..14); @hp = @max_hp
+    @exp = rand(9..13)
     @dmg_min = 8; @dmg_max = 12; @dmg = rand(@dmg_min..@dmg_max)
     @evasion = 30; @evade_chance = rand(1..@evasion)
     @accuracy = 80; @hit_chance = rand(1..@accuracy)
