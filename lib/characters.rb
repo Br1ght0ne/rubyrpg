@@ -18,7 +18,6 @@ class Player < Character
     @skills = []
     @weapon = Weapon.new('Handmade Dagger',2)
     @dmg_min = @base_dmg_min + @weapon.dmg_increase; @dmg_max = @base_dmg_max + @weapon.dmg_increase
-    @dmg = rand(@dmg_min..@dmg_max)
     @items = [SmallHealthPotion.new]
   end
 
@@ -41,27 +40,63 @@ class Player < Character
     puts "Type the code of the item you want to use (or 'exit' to quit items)"
     i = gets.chomp; i.upcase!
     if i == "EXIT"
-      get_player_action
+      if $isFight == true
+        get_fight_action
+      else
+        get_player_action
+      end
     else
       # TODO: Item use
     end
   end
   def move()
-    puts "\nYour current location: #{$player.location}"
+    puts "\nYour current location: #{@location}"
     sleep(1.5)
     $current_zone = ZoneGenerator.new.generated_zone
-    $player.location = $current_zone.name
+    @location = $current_zone.name
     puts "\nYour character wanders along... Until he sees #{$current_zone.desc}."
     $current_zone.check_for_enemy($current_zone.enemy_name)
+  end
+  def attack_enemy
+    dmg = rand(@dmg_min..@dmg_max)
+    $enemy.hp -= dmg
+    $enemy.hp = 0 if $enemy.hp <= 0
+    puts "\nDealt #{dmg} DMG to #{$enemy.name} (#{$enemy.hp} left)"
+    sleep(1.5)
+    if $enemy.hp == 0
+      puts "\nYou defeated #{$enemy.name}!"
+      $enemy = nil; $isFight = false
+    else
+      $enemy.send(:attack_player)
+    end
   end
   attr_reader :name; attr_accessor :lvl; attr_accessor :location; attr_accessor :hp; attr_accessor :max_hp; attr_accessor :dmg_min; attr_accessor :dmg_max; attr_accessor :dmg; attr_accessor :evasion; attr_accessor :accuracy; attr_reader :skills; attr_accessor :items
 end
 
 class Enemy < Character
+  include Action
   public
   def spawn
-    puts "A fearsome #{@name} stands on your way! Engaging in fight..."
+    puts "\nA fearsome #{@name} stands on your way! Engaging in fight..."
+    $isFight = true
     sleep(1.5)
+    puts "\nYour HP: #{$player.hp} | #{@name}\'s HP: #{@hp}"
+    get_fight_action
+  end
+  def attack_player
+    dmg = rand(@dmg_min..@dmg_max)
+    $player.hp -= dmg
+    puts "\n#{@name} deals #{dmg} DMG to #{$player.name}!"
+    sleep(1.5)
+    puts "\nYour HP: #{$player.hp} | #{@name}\'s HP: #{@hp}"
+    sleep(1.5)
+    if $player.hp > 0
+      get_fight_action
+    else
+      $player = nil
+      puts "You were killed by #{@name}.\n"
+      check_for_restart
+    end
   end
 end
 
