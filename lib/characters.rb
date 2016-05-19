@@ -1,6 +1,6 @@
 require_relative 'zones'
 require_relative 'modules'
-
+require_relative 'items'
 module Exp
   def check_for_new_level
 
@@ -27,7 +27,7 @@ class Player < Character
     @skills = []
     @weapon = Weapon.new('Handmade Dagger',2)
     @dmg_min = @base_dmg_min + @weapon.dmg_increase; @dmg_max = @base_dmg_max + @weapon.dmg_increase
-    @items = [SmallHealthPotion.new]
+    @items = [SmallHealthPotion.new(1)]
   end
 
   def display_player_info()
@@ -42,20 +42,37 @@ class Player < Character
     puts "\nItems:"
     i = 0
     loop do
-      break if $player.items[i].class == NilClass
-      puts "#{$player.items[i].name}(#{$player.items[i].code}) - #{@items[i].desc}" if $player.items[i].class != NilClass
+      if $player.items[i].class == NilClass
+        i = 0
+        break
+      end
+      puts "#{$player.items[i].name}(\"#{$player.items[i].order} to use\") - #{@items[i].desc}"
       i += 1
     end
-    puts "Type the code of the item you want to use (or 'exit' to quit items)"
-    i = gets.chomp; i.upcase!
-    if i == "EXIT"
-      if $isFight == true
-        get_fight_action
+    begin
+      puts "Type the code of the item you want to use (or 'exit' to quit items)"
+      code = gets.chomp
+      if code == "exit"
+        if $isFight == true
+          get_fight_action
+        else
+          get_player_action
+        end
       else
-        get_player_action
+        # TODO: Item use
+        loop do
+          if $player.items[i].order == code.to_i
+            $player.items[i].use
+            $player.items.delete_at(i) if $player.items[i].isConsumable
+            break
+          end
+          i += 1
+        end
       end
-    else
-      # TODO: Item use
+    rescue NoMethodError
+      puts "Please enter valid item code."
+      sleep(1.5)
+      retry
     end
   end
   def move()
