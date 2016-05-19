@@ -50,7 +50,7 @@ class Player < Character
       i += 1
     end
     begin
-      puts "Type the code of the item you want to use (or 'exit' to quit items)"
+      puts "\nType the code of the item you want to use (or 'exit' to quit items)"
       userCode = gets.chomp
       if userCode == "exit"
         if $isFight == true
@@ -95,7 +95,8 @@ class Player < Character
       @lvl = $exp_levels.select {|exp| exp === @exp }.values.first
       @next_lvl = @lvl + 1; @next_level_exp = $exp_levels.key(@next_lvl).begin
       @to_next_level = @next_level_exp - @exp
-      puts "Gained #{$enemy.exp} experience (#{@to_next_level} to next level)."
+      sleep(1.5)
+      puts "\nGained #{$enemy.exp} experience (#{@to_next_level} to next level).\n"
       check_for_level_change
       $enemy.send(:drop)
       $enemy = nil; $isFight = false
