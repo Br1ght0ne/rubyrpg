@@ -87,3 +87,22 @@ module Action
     end
   end
 end
+
+module Drop
+  def drop
+    puts "Upon death #{$enemy.name} dropped:"
+    $enemy.item_drop.each do |item|
+      puts "#{item.name} (#{item.type})"
+    end
+    puts "a - take all | d - don\'t take"
+    takeItem = gets.chomp
+    case takeItem
+    when "a"
+      $enemy.item_drop.each do |item|
+        $player.items.push(item)
+      end
+    when "d"
+      
+    end
+  end
+end
