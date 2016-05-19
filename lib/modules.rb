@@ -90,11 +90,11 @@ end
 
 module Drop
   def drop
-    puts "Upon death #{$enemy.name} dropped:"
+    puts "\nUpon death #{$enemy.name} dropped:"
     $enemy.item_drop.each do |item|
       puts "#{item.name} (#{item.type})"
     end
-    puts "a - take all | d - don\'t take"
+    puts "\na - take all | d - don\'t take"
     takeItem = gets.chomp
     case takeItem
     when "a"
@@ -102,7 +102,7 @@ module Drop
         $player.items.push(item)
       end
     when "d"
-      
+
     end
   end
 end
