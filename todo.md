@@ -1,2 +1,0 @@
-- __TODO__ Item use [lib\characters.rb](lib\characters.rb)
-- __TODO__ Move method [lib\characters.rb](lib\characters.rb)

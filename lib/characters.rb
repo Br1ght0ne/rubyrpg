@@ -1,6 +1,6 @@
 require_relative 'zones'
 require_relative 'modules'
-
+require_relative 'items'
 module Exp
   def check_for_new_level
 
@@ -42,20 +42,36 @@ class Player < Character
     puts "\nItems:"
     i = 0
     loop do
-      break if $player.items[i].class == NilClass
-      puts "#{$player.items[i].name}(#{$player.items[i].code}) - #{@items[i].desc}" if $player.items[i].class != NilClass
+      if $player.items[i].class == NilClass
+        i = 0
+        break
+      end
+      puts "#{$player.items[i].name} (#{$player.items[i].usage}) - #{$player.items[i].desc}"
       i += 1
     end
-    puts "Type the code of the item you want to use (or 'exit' to quit items)"
-    i = gets.chomp; i.upcase!
-    if i == "EXIT"
-      if $isFight == true
-        get_fight_action
+    begin
+      puts "\nType the code of the item you want to use (or 'exit' to quit items)"
+      userCode = gets.chomp
+      if userCode == "exit"
+        if $isFight == true
+          get_fight_action
+        else
+          get_player_action
+        end
       else
-        get_player_action
+        loop do
+          if $player.items[i].code == userCode
+            $player.items[i].use
+            $player.items.delete_at(i) if $player.items[i].isConsumable
+            break
+          end
+          i += 1
+        end
       end
-    else
-      # TODO: Item use
+    rescue NoMethodError
+      puts "Please enter valid item code."
+      sleep(1.5)
+      retry
     end
   end
   def move()
@@ -72,15 +88,17 @@ class Player < Character
     $enemy.hp = 0 if $enemy.hp <= 0
     puts "\nDealt #{dmg} DMG to #{$enemy.name} (#{$enemy.hp} left)"
     sleep(1.5)
-    if $enemy.hp == 0
+    if $enemy.hp == 0 # defeated enemy
       puts "\nYou defeated #{$enemy.name}!"
       @old_lvl = @lvl
       @exp += $enemy.exp
       @lvl = $exp_levels.select {|exp| exp === @exp }.values.first
       @next_lvl = @lvl + 1; @next_level_exp = $exp_levels.key(@next_lvl).begin
       @to_next_level = @next_level_exp - @exp
-      puts "Gained #{$enemy.exp} experience (#{@to_next_level} to next level)."
+      sleep(1.5)
+      puts "\nGained #{$enemy.exp} experience (#{@to_next_level} to next level).\n"
       check_for_level_change
+      $enemy.send(:drop)
       $enemy = nil; $isFight = false
     else
       $enemy.send(:attack_player)
@@ -96,6 +114,7 @@ end
 
 class Enemy < Character
   include Action
+  include Drop
   public
   def spawn
     puts "\nA fearsome #{@name} stands on your way! Engaging in fight..."
@@ -131,8 +150,9 @@ class Ghost < Enemy
     @evasion = 60; @evade_chance = rand(1..@evasion)
     @accuracy = 30; @hit_chance = rand(1..@accuracy)
     @skills = ["Crippling Fear"]
+    @item_drop = [StainedSheet.new]
   end
-  attr_reader :name, :skills, :appear_chance
+  attr_reader :name, :skills, :appear_chance, :item_drop
   attr_accessor :lvl, :hp, :dmg_min, :dmg_max, :dmg, :evasion, :accuracy
 end
 
@@ -145,10 +165,10 @@ class Ghoul < Enemy
     @evasion = 15; @evade_chance = rand(1..@evasion)
     @accuracy = 65; @hit_chance = rand(1..@accuracy)
     @skills = []
+    @item_drop = [GhoulTeeth.new]
   end
-  attr_reader :name; attr_accessor :lvl; attr_accessor :hp
-  attr_accessor :dmg_min; attr_accessor :dmg_max; attr_accessor :dmg
-  attr_accessor :evasion; attr_accessor :accuracy; attr_reader :skills
+  attr_reader :name, :skills, :appear_chance, :item_drop
+  attr_accessor :lvl, :hp, :dmg_min, :dmg_max, :dmg, :evasion, :accuracy
 end
 
 class Dragon < Enemy
@@ -160,10 +180,10 @@ class Dragon < Enemy
     @evasion = 10; @evade_chance = rand(1..@evasion)
     @accuracy = 40; @hit_chance = rand(1..@accuracy)
     @skills = ["Breathe Fire"]
+    @item_drop = [DragonEye.new]
   end
-  attr_reader :name; attr_accessor :lvl; attr_accessor :hp
-  attr_accessor :dmg_min; attr_accessor :dmg_max; attr_accessor :dmg
-  attr_accessor :evasion; attr_accessor :accuracy; attr_reader :skills
+  attr_reader :name, :skills, :appear_chance, :item_drop
+  attr_accessor :lvl, :hp, :dmg_min, :dmg_max, :dmg, :evasion, :accuracy
 end
 
 class Vampire < Enemy
@@ -175,8 +195,8 @@ class Vampire < Enemy
     @evasion = 30; @evade_chance = rand(1..@evasion)
     @accuracy = 80; @hit_chance = rand(1..@accuracy)
     @skills = ["Ritual of Blood Moon", "Invisibility"]
+    @item_drop = [VampireTeeth.new]
   end
-  attr_reader :name; attr_accessor :lvl; attr_accessor :hp
-  attr_accessor :dmg_min; attr_accessor :dmg_max; attr_accessor :dmg
-  attr_accessor :evasion; attr_accessor :accuracy; attr_reader :skills
+  attr_reader :name, :skills, :appear_chance, :item_drop
+  attr_accessor :lvl, :hp, :dmg_min, :dmg_max, :dmg, :evasion, :accuracy
 end
