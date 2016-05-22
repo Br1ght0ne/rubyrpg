@@ -13,6 +13,7 @@ class Character
 end
 
 class Player < Character
+include LoadAndSave
   def initialize(name)
     @name = name.capitalize
     @exp = 0; @lvl = $exp_levels.select {|exp| exp === @exp }.values.first
@@ -109,7 +110,8 @@ class Player < Character
       puts "\nLevel gained!\nYour level is now #{@lvl}."
     end
   end
-  attr_reader :name; attr_accessor :lvl; attr_accessor :location; attr_accessor :hp; attr_accessor :max_hp; attr_accessor :dmg_min; attr_accessor :dmg_max; attr_accessor :dmg; attr_accessor :evasion; attr_accessor :accuracy; attr_reader :skills; attr_accessor :items
+
+  attr_reader :name; attr_accessor :lvl, :exp; attr_accessor :location; attr_accessor :hp; attr_accessor :max_hp; attr_accessor :dmg_min; attr_accessor :dmg_max; attr_accessor :dmg; attr_accessor :evasion; attr_accessor :accuracy; attr_reader :skills; attr_accessor :items
 end
 
 class Enemy < Character
@@ -165,7 +167,7 @@ class Ghoul < Enemy
     @evasion = 15; @evade_chance = rand(1..@evasion)
     @accuracy = 65; @hit_chance = rand(1..@accuracy)
     @skills = []
-    @item_drop = [GhoulTeeth.new]
+    @item_drop = [GhoulSkin.new]
   end
   attr_reader :name, :skills, :appear_chance, :item_drop
   attr_accessor :lvl, :hp, :dmg_min, :dmg_max, :dmg, :evasion, :accuracy
