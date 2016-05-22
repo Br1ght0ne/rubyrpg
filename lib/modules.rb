@@ -22,7 +22,7 @@ module TextBlocks
     newOrLoad = gets.chomp
     case newOrLoad
     when "s"
-      puts "Enter name for your character:"
+      puts "\nEnter name for your character:"
       name = gets.chomp.capitalize
       $player = Player.new(name)
       puts "\nLet's start your adventure, #{$player.name}!\n"
@@ -123,19 +123,20 @@ module LoadAndSave
   def save_game
     t = Time.now
     stamp = t.strftime("%Y%m%d%H%M%S")
-    File.open("saves/save_#{$player.name}_#{$player.object_id}.sav", "w"){|to_file| Marshal.dump($player, to_file)}
-    puts "Saved!"
+    File.open("saves/save_#{$player.name}_#{$player.object_id}_#{stamp}.sav", "w"){|to_file| Marshal.dump($player, to_file)}
+    puts "\nSaved!"
   end
 
   def load_game
     all_saves = Dir.entries("saves").select {|f| !File.directory? f}
+    puts ""
     all_saves.each_with_index do |record,index|
       puts "#{record} - #{index}"
     end
-    puts "Enter the number of the save file:"
+    puts "\nEnter the number of the save file:"
     loadNumber = gets.chomp
     File.open("saves/#{all_saves[loadNumber.to_i]}", "r"){|from_file| $player = Marshal.load(from_file)}
-    puts "Loaded player: #{$player.name} (exp: #{$player.exp})."
+    puts "\nLoaded player: #{$player.name} (exp: #{$player.exp})."
     File.delete("saves/#{all_saves[loadNumber.to_i]}")
   end
 end
