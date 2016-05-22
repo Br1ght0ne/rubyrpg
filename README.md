@@ -1,1 +1,3 @@
-# RubyRPG [![Build Status](https://travis-ci.org/RubyAppsDev/RubyRPG.svg?branch=develop)](https://travis-ci.org/RubyAppsDev/RubyRPG)
+#RubyRPG
+
+##Click [here](https://bitbucket.org/rubyappsdev/rubyrpg/downloads/setup_RubyRPG_0.6.0.exe) to download last stable version.
