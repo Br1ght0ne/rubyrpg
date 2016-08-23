@@ -26,6 +26,7 @@ class HealthPotion < Potion
       $player.inspect_items
     end
   end
+
 end
 
 class SmallHealthPotion < HealthPotion
@@ -46,7 +47,7 @@ end
 class Junk < DroppedItems
   def initialize
     @usage = "junk, no use"
-    @isConsumable = true
+    @isConsumable = false
     @desc = "should be sold in shop"
   end
   attr_reader :usage, :isConsumable, :desc
