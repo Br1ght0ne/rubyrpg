@@ -60,6 +60,7 @@ include LoadAndSave
           get_player_action
         end
       else
+        i = 0
         loop do
           if $player.items[i].code == userCode
             $player.items[i].use
@@ -75,13 +76,24 @@ include LoadAndSave
       retry
     end
   end
+
   def move()
     puts "\nYour current location: #{@location}"
     sleep(1.5)
-    $current_zone = ZoneGenerator.new.generated_zone
+    $moveZones = Array[]
+    4.times { |i| $moveZones.push(ZoneGenerator.new.generated_zone) }
+    puts "\nZones you can travel to:"
+    $moveZones.each do |zone|
+        index = $moveZones.index(zone)
+        name = zone.name
+        puts "#{name} - #{index}"
+    end
+    userZone = gets.chomp
+    userZone = $moveZones[userZone.to_i]
+    puts "\nYour character wanders along... Until he sees #{userZone.desc}."
+    $current_zone = userZone
     @location = $current_zone.name
-    puts "\nYour character wanders along... Until he sees #{$current_zone.desc}."
-    $current_zone.check_for_enemy($current_zone.enemy_name)
+    $current_zone.check_for_enemy(userZone.enemy_name)
   end
   def attack_enemy
     dmg = rand(@dmg_min..@dmg_max)

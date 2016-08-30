@@ -22,23 +22,26 @@ module TextBlocks
     newOrLoad = gets.chomp
     case newOrLoad
     when "s"
-      puts "\nEnter name for your character:"
-      name = gets.chomp.capitalize
-      $player = Player.new(name)
-      puts "\nLet's start your adventure, #{$player.name}!\n"
-      sleep(1.5)
-      get_player_action()
+        game_begin
     when "l"
-      load_game()
-      sleep(1.5)
-      get_player_action()
+        load_game()
+        sleep(1.5)
+        get_player_action() if $loaded
     end
   end
 end
 
 module Action
+    def game_begin
+        puts "\nEnter name for your character:"
+        name = gets.chomp.capitalize
+        $player = Player.new(name)
+        puts "\nLet's start your adventure, #{$player.name}!\n"
+        sleep(1.5)
+        get_player_action()
+    end
   def get_player_action()
-    puts "\nWhat do you want to do?\nd - display information about you | i - inspect your items | m - move to some location\ns - save game | t - TERMINATE GAME"
+    puts "\nWhat do you want to do?\nd - display information about you | i - inspect your items\nm - move to some location | x - exit game"
     user_action = gets.chomp
     case user_action
     when "d"
@@ -57,8 +60,8 @@ module Action
       $player.save_game()
       sleep(2)
       get_player_action()
-    when "t"
-      puts "\nTerminating game... Farewell!"
+    when "x"
+      $player.save_game()
       sleep(1)
       exit
     else
@@ -120,23 +123,51 @@ module Drop
 end
 
 module LoadAndSave
-  def save_game
-    t = Time.now
-    stamp = t.strftime("%Y%m%d%H%M%S")
-    File.open("saves/save_#{$player.name}_#{$player.object_id}_#{stamp}.sav", "w"){|to_file| Marshal.dump($player, to_file)}
-    puts "\nSaved!"
-  end
+    def save_game
 
-  def load_game
-    all_saves = Dir.entries("saves").select {|f| !File.directory? f}
-    puts ""
-    all_saves.each_with_index do |record,index|
-      puts "#{record} - #{index}"
+        def save_method
+            t = Time.now
+            stamp = t.strftime("%Y%m%d%H%M%S")
+            File.open("saves/save_#{$player.name}_#{$player.object_id}_#{stamp}.sav", "w"){|to_file| Marshal.dump($player, to_file)}
+            puts "\nSaved!"
+        end
+
+        if Dir.exist?("saves")
+            save_method()
+        else
+            Dir.mkdir("saves")
+            save_method()
+        end
+
     end
-    puts "\nEnter the number of the save file:"
-    loadNumber = gets.chomp
-    File.open("saves/#{all_saves[loadNumber.to_i]}", "r"){|from_file| $player = Marshal.load(from_file)}
-    puts "\nLoaded player: #{$player.name} (exp: #{$player.exp})."
-    File.delete("saves/#{all_saves[loadNumber.to_i]}")
-  end
+
+    def load_game
+        Dir.mkdir("saves") if !(Dir.exist?("saves"))
+        all_saves = Dir.entries("saves").select {|f| !File.directory? f}
+        puts "\nDisplaying all the save files...\n"
+        if all_saves.empty?
+            puts "\nNo save files found :(\n"
+            puts "Do you want to start a new game? y/n"
+            startNew = gets.chomp
+            case startNew
+            when "y"
+                game_begin()
+            when "n"
+                puts "\nOkay then. Farewell!"
+                exit
+            end
+        else
+            all_saves.each_with_index do |record,index|
+                shownIndex = index + 1
+                puts "#{record} - #{shownIndex}"
+            end
+            puts "\nEnter the number of the save file:"
+            shownLoadNumber = gets.chomp
+            loadNumber = shownLoadNumber.to_i - 1
+            File.open("saves/#{all_saves[loadNumber.to_i]}", "r"){|from_file| $player = Marshal.load(from_file)}
+            puts "\nLoaded player: #{$player.name} (exp: #{$player.exp})."
+            File.delete("saves/#{all_saves[loadNumber.to_i]}")
+            $loaded = true
+        end
+    end
 end
