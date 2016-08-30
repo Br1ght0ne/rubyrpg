@@ -38,7 +38,7 @@ end
 
 module Action
   def get_player_action()
-    puts "\nWhat do you want to do?\nd - display information about you | i - inspect your items | m - move to some location\ns - save game | t - TERMINATE GAME"
+    puts "\nWhat do you want to do?\nd - display information about you | i - inspect your items\nm - move to some location | x - exit game"
     user_action = gets.chomp
     case user_action
     when "d"
@@ -57,8 +57,8 @@ module Action
       $player.save_game()
       sleep(2)
       get_player_action()
-    when "t"
-      puts "\nTerminating game... Farewell!"
+    when "x"
+      $player.save_game()
       sleep(1)
       exit
     else
@@ -120,23 +120,34 @@ module Drop
 end
 
 module LoadAndSave
-  def save_game
-    t = Time.now
-    stamp = t.strftime("%Y%m%d%H%M%S")
-    File.open("saves/save_#{$player.name}_#{$player.object_id}_#{stamp}.sav", "w"){|to_file| Marshal.dump($player, to_file)}
-    puts "\nSaved!"
-  end
+    def save_game
 
-  def load_game
-    all_saves = Dir.entries("saves").select {|f| !File.directory? f}
-    puts ""
-    all_saves.each_with_index do |record,index|
-      puts "#{record} - #{index}"
+        def save_method
+            t = Time.now
+            stamp = t.strftime("%Y%m%d%H%M%S")
+            File.open("saves/save_#{$player.name}_#{$player.object_id}_#{stamp}.sav", "w"){|to_file| Marshal.dump($player, to_file)}
+            puts "\nSaved!"
+        end
+
+        if Dir.exist?("saves")
+            save_method()
+        else
+            Dir.mkdir("saves")
+            save_method()
+        end
+
     end
-    puts "\nEnter the number of the save file:"
-    loadNumber = gets.chomp
-    File.open("saves/#{all_saves[loadNumber.to_i]}", "r"){|from_file| $player = Marshal.load(from_file)}
-    puts "\nLoaded player: #{$player.name} (exp: #{$player.exp})."
-    File.delete("saves/#{all_saves[loadNumber.to_i]}")
-  end
+
+        def load_game
+        all_saves = Dir.entries("saves").select {|f| !File.directory? f}
+        puts ""
+        all_saves.each_with_index do |record,index|
+        puts "#{record} - #{index}"
+        end
+        puts "\nEnter the number of the save file:"
+        loadNumber = gets.chomp
+        File.open("saves/#{all_saves[loadNumber.to_i]}", "r"){|from_file| $player = Marshal.load(from_file)}
+        puts "\nLoaded player: #{$player.name} (exp: #{$player.exp})."
+        File.delete("saves/#{all_saves[loadNumber.to_i]}")
+    end
 end
