@@ -89,7 +89,11 @@ include LoadAndSave
           if $player.items[i].code == userCode
             $player.items[i].use
             $player.items.delete_at(i) if $player.items[i].isConsumable
-            break
+            if $isFight == true
+              get_fight_action
+            else
+              get_player_action
+            end
           end
           i += 1
         end
