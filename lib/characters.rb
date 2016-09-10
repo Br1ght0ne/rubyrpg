@@ -27,6 +27,16 @@ include LoadAndSave
     @accuracy = 70;  @hit_chance = rand(1..@accuracy)
     @skills = []
     @weapon = Weapon.new('Handmade Dagger',2)
+    @helmet
+    @armor
+    @gloves
+    @cape
+    @boots
+    @leggings
+    @ring_left
+    @ring_right
+    @amulet
+    @belt
     @dmg_min = @base_dmg_min + @weapon.dmg_increase; @dmg_max = @base_dmg_max + @weapon.dmg_increase
     @items = [SmallHealthPotion.new]
   end
