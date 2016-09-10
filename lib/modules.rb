@@ -69,26 +69,27 @@ module Action
     end
   end
   def get_fight_action
-    puts "\nWhat do you want to do?\na - attack enemy | i - inspect your items | s - inspect your skills | t - TERMINATE GAME"
+    $isFight = true
+    puts "\nWhat do you want to do?\na - attack enemy | i - inspect your items | s - inspect your skills | x - save and exit"
     user_action = gets.chomp
-    case user_action
-    when "a" || "attack"
-      $player.attack_enemy
+case user_action
+    when "a"
+        $player.attack_enemy
     when "i"
-      $player.inspect_items()
-      sleep(2)
-      get_player_action()
+        $player.inspect_items()
+        sleep(2)
+        get_player_action()
     when "s"
-      $player.inspect_skills()
-      sleep(2)
-      get_player_action()
-    when "t"
-      puts "\nTerminating game... Farewell!"
-      sleep(1)
-      exit
+        $player.inspect_skills()
+        sleep(2)
+        get_player_action()
+    when "x"
+        $player.save_game()
+        sleep(1)
+        exit
     else
-      get_fight_action
-    end
+        get_fight_action
+end
   end
   def check_for_restart
     puts "Do you want to start over? y/n"; restart = gets.chomp

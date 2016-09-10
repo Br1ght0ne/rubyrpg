@@ -23,10 +23,24 @@ include LoadAndSave
     @location = $current_zone.name
     @max_hp = 100; @hp = @max_hp
     @base_dmg_min = 3; @base_dmg_max = 8
+    @base_def_min = 0; @base_def_max = 4
     @evasion = 20; @evade_chance = rand(1..@evasion)
     @accuracy = 70;  @hit_chance = rand(1..@accuracy)
     @skills = []
     @weapon = Weapon.new('Handmade Dagger',2)
+    @helmet = NoDefenseItem.new('no helmet')
+    @armor = NoDefenseItem.new('no armor')
+    @gloves = NoDefenseItem.new('no gloves')
+    @cape = NoDexterityItem.new('no cape')
+    @boots = NoDefenseItem.new('no boots')
+    @leggings = NoDefenseItem.new('no leggings')
+    @ring_left = NoVarItem.new('no ring on left hand')
+    @ring_right = NoVarItem.new('no ring on right hand')
+    @amulet = NoVarItem.new('no amulet')
+    @belt = NoVarItem.new('no belt')
+    @armor_value = @helmet.def_increase + @armor.def_increase + @gloves.def_increase + @boots.def_increase + @leggings.def_increase
+    @def_min = @base_def_min + @armor_value
+    @def_max = @base_def_max + @armor_value
     @dmg_min = @base_dmg_min + @weapon.dmg_increase; @dmg_max = @base_dmg_max + @weapon.dmg_increase
     @items = [SmallHealthPotion.new]
   end
@@ -34,12 +48,22 @@ include LoadAndSave
   def display_player_info()
     puts "\nDisplaying info for #{$player.class}: #{$player.name}..."
     sleep(1)
-    puts "\nName: #{@name}\nLevel: #{@lvl} (#{@to_next_level} to next level)\nHP: #{@hp}/#{@max_hp}\nDamage: #{@dmg_min}-#{@dmg_max} (including #{@weapon.dmg_increase} from #{@weapon.name})\nEvasion: #{@evasion}\nAccuracy: #{@accuracy}"
+    puts "\nName: #{@name}\nLevel: #{@lvl} (#{@to_next_level} to next level)\nHP: #{@hp}/#{@max_hp}\nDamage: #{@dmg_min}-#{@dmg_max} (including #{@weapon.dmg_increase} from #{@weapon.name})\nDefense: #{@def_min}-#{@def_max} (including #{@armor_value} from equipped items)\nEvasion: #{@evasion}\nAccuracy: #{@accuracy}"
   end
   def inspect_items()
     puts "\nInspecting items of #{$player.class}: #{$player.name}..."
     sleep(1)
     puts "\nWeapon:\n#{@weapon.name} - increases damage dealt by #{@weapon.dmg_increase}"
+    puts "\nHelmet:\n#{@helmet.name} - increases defense by #{@helmet.def_increase}"
+    puts "\nArmor:\n#{@armor.name} - increases defense by #{@armor.def_increase}"
+    puts "\nGloves:\n#{@gloves.name} - increases defense by #{@gloves.def_increase}"
+    puts "\nCape:\n#{@cape.name} - increases dexterity by #{@cape.dex_increase}"
+    puts "\nBoots:\n#{@boots.name} - increases defense by #{@boots.def_increase}"
+    puts "\nLeggings:\n#{@leggings.name} - increases defense by #{@leggings.def_increase}"
+    puts "\nRing (left hand):\n#{@ring_left.name} - increases #{@ring_left.increase_type} by #{@ring_left.increase_value}"
+    puts "\nRing (right hand):\n#{@ring_right.name} - increases #{@ring_right.increase_type} by #{@ring_right.increase_value}"
+    puts "\nAmulet:\n#{@amulet.name} - increases #{@amulet.increase_type} by #{@amulet.increase_value}"
+    puts "\nBelt:\n#{@belt.name} - increases #{@belt.increase_type} by #{@belt.increase_value}"
     puts "\nItems:"
     i = 0
     loop do
@@ -65,7 +89,11 @@ include LoadAndSave
           if $player.items[i].code == userCode
             $player.items[i].use
             $player.items.delete_at(i) if $player.items[i].isConsumable
-            break
+            if $isFight == true
+              get_fight_action
+            else
+              get_player_action
+            end
           end
           i += 1
         end
