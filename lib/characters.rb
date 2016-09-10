@@ -23,6 +23,10 @@ include LoadAndSave
     @location = $current_zone.name
     @max_hp = 100; @hp = @max_hp
     @base_dmg_min = 3; @base_dmg_max = 8
+    @base_def_min = 0; @base_def_max = 4
+    @armor_value = @helmet.def_increase + @armor.def_increase + @gloves.def_increase + @boots.def_increase + @leggings.def_increase
+    @def_min = @base_def_min + @armor_value
+    @def_max = @base_def_max + @armor_value
     @evasion = 20; @evade_chance = rand(1..@evasion)
     @accuracy = 70;  @hit_chance = rand(1..@accuracy)
     @skills = []
@@ -50,6 +54,16 @@ include LoadAndSave
     puts "\nInspecting items of #{$player.class}: #{$player.name}..."
     sleep(1)
     puts "\nWeapon:\n#{@weapon.name} - increases damage dealt by #{@weapon.dmg_increase}"
+    puts "\nHelmet:#{@helmet.name} - increases defense by #{@helmet.def_increase}" if !(@helmet.empty?)
+    puts "\nArmor:#{@armor.name} - increases defense by #{@armor.def_increase}" if !(@armor.empty?)
+    puts "\nGloves:#{@gloves.name} - increases defense by #{@gloves.def_increase}" if !(@gloves.empty?)
+    puts "\nCape:#{@cape.name} - increases dexterity by #{@cape.dex_increase}" if !(@cape.empty?)
+    puts "\nBoots:#{@boots.name} - increases defense by #{@boots.def_increase}" if !(@boots.empty?)
+    puts "\nLeggings:#{@leggings.name} - increases defense by #{@leggings.def_increase}" if !(@leggings.empty?)
+    puts "\nRing (left hand):#{@ring_left.name} - increases #{@ring_left.increase_type} by #{@ring_left.increase_value}" if !(@ring_left.empty?)
+    puts "\nRing (right hand):#{@ring_right.name} - increases #{@ring_right.increase_type} by #{@ring_right.increase_value}" if !(@ring_right.empty?)
+    puts "\nAmulet:#{@amulet.name} - increases #{@amulet.increase_type} by #{@amulet.increase_value}" if !(@amulet.empty?)
+    puts "\nBelt:#{@belt.name} - increases #{@belt.increase_type} by #{@belt.increase_value}" if !(@belt.empty?)
     puts "\nItems:"
     i = 0
     loop do
