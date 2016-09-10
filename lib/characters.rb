@@ -48,7 +48,7 @@ include LoadAndSave
   def display_player_info()
     puts "\nDisplaying info for #{$player.class}: #{$player.name}..."
     sleep(1)
-    puts "\nName: #{@name}\nLevel: #{@lvl} (#{@to_next_level} to next level)\nHP: #{@hp}/#{@max_hp}\nDamage: #{@dmg_min}-#{@dmg_max} (including #{@weapon.dmg_increase} from #{@weapon.name})\nEvasion: #{@evasion}\nAccuracy: #{@accuracy}"
+    puts "\nName: #{@name}\nLevel: #{@lvl} (#{@to_next_level} to next level)\nHP: #{@hp}/#{@max_hp}\nDamage: #{@dmg_min}-#{@dmg_max} (including #{@weapon.dmg_increase} from #{@weapon.name})\nDefense: #{@def_min}-#{@def_max} (including #{@armor_value} from equipped items)\nEvasion: #{@evasion}\nAccuracy: #{@accuracy}"
   end
   def inspect_items()
     puts "\nInspecting items of #{$player.class}: #{$player.name}..."
