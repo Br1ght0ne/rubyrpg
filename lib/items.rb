@@ -2,6 +2,38 @@ class Item
 
 end
 
+class NoItem < Item
+    def initialize(name)
+        @name = name
+    end
+    attr_reader :name
+end
+
+class NoVarItem < NoItem
+    def initialize(name)
+        @name = name
+        @increase_type = "*nothing*"
+        @increase_value = 0
+    end
+    attr_reader :name, :increase_value, :increase_type
+end
+
+class NoDefenseItem < NoItem
+    def initialize(name)
+        @name = name
+        @def_increase = 0
+    end
+    attr_reader :def_increase, :name
+end
+
+class NoDexterityItem < NoItem
+    def initialize(name)
+        @name = name
+        @dex_increase = 0
+    end
+    attr_reader :dex_increase, :name
+end
+
 class Weapon < Item
   def initialize(name,dmg_increase)
     @name = name; @dmg_increase = dmg_increase
