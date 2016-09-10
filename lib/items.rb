@@ -41,37 +41,45 @@ class Weapon < Item
   attr_reader :name; attr_accessor :dmg_increase
 end
 
+class Armor < Item
+
+end
+
 class Potion < Item
 end
 
 class HealthPotion < Potion
-
-  def use
-    begin
-      raise if $player.hp == $player.max_hp
-      hp_before_heal = $player.hp
-      $player.hp += @hp_restore
-      $player.hp = $player.max_hp if $player.hp > $player.max_hp
-      healed = $player.hp - hp_before_heal
-      puts "Restored #{healed} HP."
-    rescue
-      puts "You can\'t use health potions while you have full HP."
-      sleep(1.5)
-      $player.inspect_items
+    def initialize
+        @usage = "type #{@code} to use"
+        @isConsumable = true
+        @desc = "restores your HP by #{@hp_restore}"
     end
-  end
+
+    def use
+        begin
+          raise if $player.hp == $player.max_hp
+          hp_before_heal = $player.hp
+          $player.hp += @hp_restore
+          $player.hp = $player.max_hp if $player.hp > $player.max_hp
+          healed = $player.hp - hp_before_heal
+          puts "Restored #{healed} HP."
+        rescue
+          puts "You can\'t use health potions while you have full HP."
+          sleep(1.5)
+          $player.inspect_items
+        end
+    end
 
 end
 
 class SmallHealthPotion < HealthPotion
-  def initialize
-    @code = "SHP"
-    @usage = "type #{@code} to use"
-    @isConsumable = true
-    @name = "Small Health Potion"
-    @hp_restore = 20; @desc = "restores your HP by #{@hp_restore}"
-  end
-  attr_reader :name, :code, :hp_restore, :desc, :isConsumable, :usage
+    def initialize
+        @code = "SHP"
+        @name = "Small Health Potion"
+        @hp_restore = 20
+        super
+    end
+    attr_reader :name, :code, :hp_restore, :desc, :isConsumable, :usage
 end
 
 class DroppedItems
