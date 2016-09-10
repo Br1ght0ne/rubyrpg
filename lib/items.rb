@@ -17,9 +17,11 @@ class HealthPotion < Potion
   def use
     begin
       raise if $player.hp == $player.max_hp
+      hp_before_heal = $player.hp
       $player.hp += @hp_restore
       $player.hp = $player.max_hp if $player.hp > $player.max_hp
-      puts "Restored #{@hp_restore} HP."
+      healed = $player.hp - hp_before_heal
+      puts "Restored #{healed} HP."
     rescue
       puts "You can\'t use health potions while you have full HP."
       sleep(1.5)
