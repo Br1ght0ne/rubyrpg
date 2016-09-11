@@ -78,22 +78,14 @@ include LoadAndSave
       puts "\nType the code of the item you want to use (or 'exit' to quit items)"
       userCode = gets.chomp
       if userCode == "exit"
-        if $isFight == true
-          get_fight_action
-        else
-          get_player_action
-        end
+        check_for_fight
       else
         i = 0
         loop do
           if $player.items[i].code == userCode
             $player.items[i].use
             $player.items.delete_at(i) if $player.items[i].isConsumable
-            if $isFight == true
-              get_fight_action
-            else
-              get_player_action
-            end
+            check_for_fight
           end
           i += 1
         end
@@ -103,6 +95,11 @@ include LoadAndSave
       sleep(1.5)
       retry
     end
+  end
+
+  def inspect_skills()
+      puts "Not implemented yet."
+      check_for_fight
   end
 
   def move()
