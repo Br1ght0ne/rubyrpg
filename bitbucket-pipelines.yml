@@ -1,0 +1,7 @@
+pipelines:
+    linux-release:
+        - step:
+            script:
+                - ./INSTALL.sh
+                - ~/games/rubyrpg/rubyrpg
+                - ^C
