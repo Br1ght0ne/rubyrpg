@@ -5,7 +5,7 @@
 ## Installation for Linux
 #### VERSION is a placeholder
     tar -xvf /path/to/rubyrpg-VERSION-linux.tar.gz
-    cd /path/to/rubyrpg-VERSION-linux
+    cd /path/to/rubyrpg
     ./INSTALL.sh
 #### To run:
     ~/games/rubyrpg/rubyrpg
