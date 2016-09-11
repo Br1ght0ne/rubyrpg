@@ -1,9 +1,11 @@
+#!/usr/bin/env ruby
+
 # My additions
-require_relative 'lib/characters'
-require_relative 'lib/character_actions'
-require_relative 'lib/zones'
-require_relative 'lib/modules'
-require_relative 'lib/items'
+require_relative 'lib/characters.rb'
+require_relative 'lib/character_actions.rb'
+require_relative 'lib/zones.rb'
+require_relative 'lib/modules.rb'
+require_relative 'lib/items.rb'
 include TextBlocks
 include Action
 
