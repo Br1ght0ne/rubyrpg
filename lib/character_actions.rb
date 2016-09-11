@@ -1,6 +1,6 @@
 module Fighting
-  def attack(attacker, target)
-  end
+    def attack(attacker, target)
+    end
 end
 
 module Movement

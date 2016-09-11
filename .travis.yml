@@ -1,7 +1,0 @@
-language: ruby
-rvm:
-  - 2.2
-  - 1.9.3
-  - jruby
-script:
-  - ruby rubyrpg.rb < testing.txt
