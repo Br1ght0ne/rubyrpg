@@ -17,5 +17,13 @@ $exp_levels = {
   90..139 => 4,
   140..199 => 5
 }
+
+# Trap ^C
+Signal.trap("INT") {
+  puts "\nExitting without saving..."
+  sleep(0.5)
+  exit
+}
+
 # NOTE: Beginning of the game
-start
+    start

@@ -28,8 +28,6 @@ class StartZone < Zone
   attr_reader :name
 end
 
-# REVIEW: enemy encounter
-
 class Graveyard < Zone
   @@graveyard_count = 0
   def initialize
