@@ -1,8 +1,8 @@
 pipelines:
     default:
-        - step:
-            script:
-                - 
+        # - step:
+        #     script:
+        #         -
         - step:
             script:
                 - ./INSTALL.sh
