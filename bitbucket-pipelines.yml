@@ -1,0 +1,10 @@
+pipelines:
+    default:
+        - step:
+            script:
+                - 
+        - step:
+            script:
+                - ./INSTALL.sh
+                - ~/games/rubyrpg/rubyrpg
+                - ^C
