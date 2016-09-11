@@ -1,5 +1,4 @@
 class Item
-
 end
 
 class NoItem < Item
@@ -42,7 +41,12 @@ class Weapon < Item
 end
 
 class Armor < Item
+end
 
+class Artifact < Item
+end
+
+class Jewelry < Artifact
 end
 
 class Potion < Item
@@ -73,6 +77,7 @@ class HealthPotion < Potion
 end
 
 class SmallHealthPotion < HealthPotion
+<<<<<<< HEAD
     def initialize
         @code = "SHP"
         @name = "Small Health Potion"
@@ -80,57 +85,82 @@ class SmallHealthPotion < HealthPotion
         super
     end
     attr_reader :name, :code, :hp_restore, :desc, :isConsumable, :usage
+=======
+
+  def initialize
+    @code = "SHP"
+    @usage = "type #{@code} to use"
+    @isConsumable = true
+    @name = "Small Health Potion"
+    @hp_restore = 20; @desc = "restores your HP by #{@hp_restore}"
+  end
+
+  attr_reader :name, :code, :hp_restore, :desc, :isConsumable, :usage
+>>>>>>> feature/artifacts
 end
 
 class DroppedItems
-
 end
 
 class Junk < DroppedItems
+
   def initialize
     @usage = "junk, no use"
-    @isConsumable = false
+    @isConsumable = true
     @desc = "should be sold in shop"
   end
+
   attr_reader :usage, :isConsumable, :desc
 end
 
 class StainedSheet < Junk
+
   def initialize
     super
     @name = "Stained Sheet"
     @type = "Junk"
     @value = 3
   end
+
   attr_reader :name, :type, :value
 end
 
 class GhoulSkin < Junk
+
   def initialize
     super
     @name = "Ghoul Skin"
     @type = "Junk"
     @value = 5
   end
+
   attr_reader :name, :type, :value
 end
 
 class DragonEye < Junk
+
   def initialize
     super
     @name = "Dragon Eye"
     @type = "Junk"
     @value = 30
   end
+
   attr_reader :name, :type, :value
 end
 
 class VampireTeeth < Junk
+
   def initialize
     super
     @name = "Vampire Teeth"
     @type = "Junk"
     @value = 12
   end
+
   attr_reader :name, :type, :value
+end
+
+class Ring > Jewelry
+
 end
