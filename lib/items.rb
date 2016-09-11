@@ -77,7 +77,6 @@ class HealthPotion < Potion
 end
 
 class SmallHealthPotion < HealthPotion
-<<<<<<< HEAD
     def initialize
         @code = "SHP"
         @name = "Small Health Potion"
@@ -85,18 +84,6 @@ class SmallHealthPotion < HealthPotion
         super
     end
     attr_reader :name, :code, :hp_restore, :desc, :isConsumable, :usage
-=======
-
-  def initialize
-    @code = "SHP"
-    @usage = "type #{@code} to use"
-    @isConsumable = true
-    @name = "Small Health Potion"
-    @hp_restore = 20; @desc = "restores your HP by #{@hp_restore}"
-  end
-
-  attr_reader :name, :code, :hp_restore, :desc, :isConsumable, :usage
->>>>>>> feature/artifacts
 end
 
 class DroppedItems
@@ -161,6 +148,5 @@ class VampireTeeth < Junk
   attr_reader :name, :type, :value
 end
 
-class Ring > Jewelry
-
+class Ring < Jewelry
 end
