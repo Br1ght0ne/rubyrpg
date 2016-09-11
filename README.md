@@ -1,3 +1,11 @@
-#RubyRPG
+# RubyRPG
 
-##Click [here](https://bitbucket.org/rubyappsdev/rubyrpg/downloads/setup_RubyRPG_0.6.0.exe) to download last stable version.
+## Download last development version: [Linux](https://bitbucket.org/rubyappsdev/rubyrpg/downloads/rubyrpg-0.7.4-linux.tar.gz) | [Windows (in dev)]()
+
+## Installation for Linux
+#### VERSION is a placeholder
+    tar -xvf /path/to/rubyrpg-VERSION-linux.tar.gz
+    cd /path/to/rubyrpg-VERSION-linux
+    ./INSTALL.sh
+#### To run:
+    ~/games/rubyrpg/rubyrpg
