@@ -3,19 +3,19 @@ require_relative 'modules'
 require_relative 'items'
 
 # Class for handling player state and interactions with world/self
+# rubocop:disable ClassLength
 class Player
   include LoadAndSave
 
   def initialize(name)
     @name = name.capitalize
-    fetch_items
-    fetch_char
+    @inventory = Inventory.new
+    @equipment = Equipment.new
     fetch_state
-    @item_fields = [@weapon, @helmet, @armor,
-                    @gloves, @cape, @boots,
-                    @leggings, @ring_left, @ring_right,
-                    @amulet, @belt]
+    fetch_char
   end
+
+  attr_accessor :inventory, :equipment
 
   private
 
@@ -28,70 +28,54 @@ class Player
     @skills = []
   end
 
-  # rubocop:disable Metrics/AbcSize
-  # rubocop:disable Metrics/MethodLength
-  def fetch_items
-    @items = [SmallHealthPotion.new]
-    @weapon = Weapon.new('Handmade Dagger', 2)
-    @helmet = Helmet.new('no helmet', 0)
-    @armor = Armor.new('no armor', 0)
-    @gloves = Gloves.new('no gloves', 0)
-    @cape = Cape.new('no cape', 0)
-    @boots = Boots.new('no boots', 0)
-    @leggings = Leggings.new('no leggings', 0)
-    @ring_left = RingLeft.new('no ring on left hand', '*nothing*', 0)
-    @ring_right = RingRight.new('no ring on right hand', '*nothing*', 0)
-    @amulet = Amulet.new('no amulet', '*nothing*', 0)
-    @belt = Belt.new('no belt', '*nothing*', 0)
-  end
-  # rubocop:enable Metrics/MethodLength
-  # rubocop:enable Metrics/AbcSize
-
   def fetch_char
-    fetch_hp
-    fetch_def
-    fetch_dmg
-    fetch_evasion
-    fetch_accuracy
-    fetch_exp
+    fetch_hp(100)
+    fetch_def(0, 4)
+    fetch_dmg(3, 8)
+    fetch_evasion(20)
+    fetch_accuracy(70)
+    fetch_exp(0)
   end
 
-  def fetch_hp
-    @max_hp = 100
+  def fetch_hp(max_hp)
+    @max_hp = max_hp
     @hp = @max_hp
   end
 
-  def fetch_def
-    @base_def_min = 0
-    @base_def_max = 4
-    @armor_value = @helmet.increase_value + @armor.increase_value +
-                   @gloves.increase_value + @boots.increase_value +
-                   @leggings.increase_value
-    @def_min = @base_def_min + @armor_value
-    @def_max = @base_def_max + @armor_value
+  def fetch_def(min, max)
+    @armor_value = calculate_armor_value
+    @def_min = min + @armor_value
+    @def_max = max + @armor_value
   end
 
-  def fetch_dmg
-    @base_dmg_min = 3
-    @base_dmg_max = 8
-    @dmg_min = @base_dmg_min + @weapon.dmg_increase
-    @dmg_max = @base_dmg_max + @weapon.dmg_increase
+  def calculate_armor_value
+    value = @equipment.helmet.increase_value +
+            @equipment.armor.increase_value +
+            @equipment.gloves.increase_value +
+            @equipment.boots.increase_value +
+            @equipment.leggings.increase_value
+    value
   end
 
-  def fetch_evasion
-    @evasion = 20
+  def fetch_dmg(min, max)
+    @dmg_min = min + @equipment.weapon.dmg_increase
+    @dmg_max = max + @equipment.weapon.dmg_increase
+  end
+
+  def fetch_evasion(chance)
+    @evasion = chance
     @evade_chance = rand(1..@evasion)
   end
 
-  def fetch_accuracy
-    @accuracy = 70
+  def fetch_accuracy(chance)
+    @accuracy = chance
     @hit_chance = rand(1..@accuracy)
   end
 
   # rubocop:disable Style/CaseEquality
-  def fetch_exp
-    @exp = 0
-    @lvl = $exp_levels.select { |exp| exp === @exp }.values.first
+  def fetch_exp(exp)
+    @exp = exp
+    @lvl = $exp_levels.select { |level| level === @exp }.values.first
     @next_lvl = @lvl + 1
     @next_level_exp = $exp_levels.key(@next_lvl).begin.to_i
     @to_next_level = @next_level_exp - @exp
@@ -106,7 +90,8 @@ class Player
     puts "\nName: #{@name}\nLevel: #{@lvl} "\
          "(#{@to_next_level} to next level)\n"\
          "HP: #{@hp}/#{@max_hp}\nDamage: #{@dmg_min}-#{@dmg_max} "\
-         "(including #{@weapon.dmg_increase} from #{@weapon.name})\n"\
+         "(including #{@equipment.weapon.dmg_increase} "\
+         "from #{@equipment.weapon.name})\n"\
          "Defense: #{@def_min}-#{@def_max} (including #{@armor_value} "\
          "from equipped items)\nEvasion: #{@evasion}\nAccuracy: #{@accuracy}"
   end
@@ -114,59 +99,42 @@ class Player
   def inspect_items
     puts "\nInspecting items of #{$player.class}: #{$player.name}..."
     sleep(1)
-    $player.item_fields.each do |item|
-      puts "\n#{item.type}: #{item.name} - increases #{item.increase_type} "\
-           "by #{item.increase_value}"
-    end
-    # puts "\nWeapon:\n#{@weapon.name} - increases damage dealt by "\
-    #      "#{@weapon.dmg_increase}"
-    # puts "\nHelmet:\n#{@helmet.name} - increases defense by "\
-    #      "#{@helmet.def_increase}"
-    # puts "\nArmor:\n#{@armor.name} - increases defense by "\
-    #      "#{@armor.def_increase}"
-    # puts "\nGloves:\n#{@gloves.name} - increases defense by "\
-    #      "#{@gloves.def_increase}"
-    # puts "\nCape:\n#{@cape.name} - increases dexterity by "\
-    #      "#{@cape.dex_increase}"
-    # puts "\nBoots:\n#{@boots.name} - increases defense by "\
-    #      "#{@boots.def_increase}"
-    # puts "\nLeggings:\n#{@leggings.name} - increases defense by "\
-    #      "#{@leggings.def_increase}"
-    # puts "\nRing (left hand):\n#{@ring_left.name} - increases "\
-    #      "#{@ring_left.increase_type} by #{@ring_left.increase_value}"
-    # puts "\nRing (right hand):\n#{@ring_right.name} - increases "\
-    #      "#{@ring_right.increase_type} by #{@ring_right.increase_value}"
-    # puts "\nAmulet:\n#{@amulet.name} - increases #{@amulet.increase_type} "\
-    #      "by #{@amulet.increase_value}"
-    # puts "\nBelt:\n#{@belt.name} - increases #{@belt.increase_type} by "\
-    #      "#{@belt.increase_value}"
+    # FIXME:
+    @equipment.list
     puts "\nItems:"
     item_show_loop
   end
 
   private
 
+  # rubocop:disable MethodLength
+  # rubocop:disable AbcSize
   def item_show_loop
     i = 0
     loop do
-      if $player.items[i].class == NilClass
+      if $player.inventory.items[i].class == NilClass
         i = 0
         break
       end # if
-      puts "#{$player.items[i].name} (#{$player.items[i].usage}) - #{$player.items[i].desc}"
+      puts "#{$player.inventory.items[i].name} "\
+           "(#{$player.inventory.items[i].usage}) - "\
+           "#{$player.inventory.items[i].desc}"
       i += 1
     end # loop
     begin
-      puts "\nType the code of the item you want to use (or 'exit' to quit items)"
-      userCode = gets.chomp
-      if userCode == 'exit'
+      puts "\nType the code of the item you want to use "\
+           "(or 'exit' to quit items)"
+      user_code = gets.chomp
+      if user_code == 'exit'
         check_for_fight
       else
         i = 0
         loop do
-          if $player.items[i].code == userCode
-            $player.items[i].use
-            $player.items.delete_at(i) if $player.items[i].isConsumable
+          if $player.inventory.items[i].code == user_code
+            $player.inventory.items[i].use
+            if $player.inventory.items[i].is_consumable
+              $player.inventory.items.delete_at(i)
+            end
             check_for_fight
           end # if
           i += 1
@@ -178,6 +146,7 @@ class Player
       retry
     end # begin
   end # item_show_loop
+  # rubocop:enable AbcSize
   # rubocop:enable MethodLength
 
   public
@@ -191,21 +160,40 @@ class Player
   def move
     puts "\nYour current location: #{@location}"
     sleep(1.5)
-    $moveZones = Array[]
-    4.times { |_i| $moveZones.push(ZoneGenerator.new.generated_zone) }
+    generate_zones(4)
     puts "\nZones you can travel to:"
+    print_zones
+    user_zone = zone
+    puts "\nYour character wanders along... Until he sees #{user_zone.desc}."
+    # puts 'DEBUG: CHECK FOR ENEMY STARTING'
+    $current_zone = user_zone
+    @location = $current_zone.name
+    $current_zone.check_for_enemy(user_zone.enemy_name)
+    # puts 'DEBUG: CHECK FOR ENEMY COMPLETED'
+  end
+
+  private
+
+  def generate_zones(n)
+    $moveZones = Array[]
+    n.times { |_i| $moveZones.push(ZoneGenerator.new.generated_zone) }
+  end
+
+  def print_zones
     $moveZones.each do |zone|
       index = $moveZones.index(zone)
       name = zone.name
       puts "#{name} - #{index}"
     end
-    user_zone = gets.chomp
-    user_zone = $moveZones[user_zone.to_i]
-    puts "\nYour character wanders along... Until he sees #{user_zone.desc}."
-    $current_zone = user_zone
-    @location = $current_zone.name
-    $current_zone.check_for_enemy(user_zone.enemy_name)
   end
+
+  def zone
+    user_zone = gets.chomp
+    zone = $moveZones[user_zone.to_i]
+    zone
+  end
+
+  public
 
   def attack_enemy
     dmg = rand(@dmg_min..@dmg_max)
@@ -213,22 +201,43 @@ class Player
     $enemy.hp = 0 if $enemy.hp <= 0
     puts "\nDealt #{dmg} DMG to #{$enemy.name} (#{$enemy.hp} left)"
     sleep(1.5)
+    check_if_defeated
+  end
+
+  private
+
+  def check_if_defeated
     if $enemy.hp.zero? # defeated enemy
       puts "\nYou defeated #{$enemy.name}!"
-      @old_lvl = @lvl
-      @exp += $enemy.exp
-      @lvl = $exp_levels.select { |exp| exp === @exp }.values.first
-      @next_lvl = @lvl + 1; @next_level_exp = $exp_levels.key(@next_lvl).begin
-      @to_next_level = @next_level_exp - @exp
-      sleep(1.5)
-      puts "\nGained #{$enemy.exp} experience (#{@to_next_level} to next level).\n"
+      change_experience
+      puts "\nGained #{$enemy.exp} experience (#{@to_next_level} "\
+           "to next level).\n"
       check_for_level_change
-      $enemy.send(:drop)
-      $enemy = nil; $isFight = false
+      end_fight
     else
       $enemy.send(:attack_player)
     end
   end
+
+  # rubocop:disable CaseEquality
+  def change_experience
+    @old_lvl = @lvl
+    @exp += $enemy.exp
+    @lvl = $exp_levels.select { |exp| exp === @exp }.values.first
+    @next_lvl = @lvl + 1
+    @next_level_exp = $exp_levels.key(@next_lvl).begin
+    @to_next_level = @next_level_exp - @exp
+    sleep(1.5)
+  end
+  # rubocop:enable CaseEquality
+
+  def end_fight
+    $enemy.send(:drop)
+    $enemy = nil
+    $isFight = false
+  end
+
+  public
 
   def check_for_level_change
     puts "\nLevel gained!\nYour level is now #{@lvl}." if @lvl > @old_lvl
@@ -244,13 +253,12 @@ class Player
   attr_accessor :skills
   attr_accessor :items
 end
+# rubocop:enable ClassLength
 
 # generic enemy class to import modules
 class Enemy
   include Action
   include Drop
-
-  public
 
   def spawn
     puts "\nA fearsome #{@name} stands on your way! Engaging in fight..."
@@ -267,6 +275,12 @@ class Enemy
     sleep(1.5)
     puts "\nYour HP: #{$player.hp} | #{@name}\'s HP: #{@hp}"
     sleep(1.5)
+    check_for_player_death
+  end
+
+  private
+
+  def check_for_player_death
     if $player.hp > 0
       get_fight_action
     else
@@ -275,70 +289,93 @@ class Enemy
       check_for_restart
     end
   end
-  attr_reader :exp
+
+  def fetch_hp(min, max)
+    @max_hp = rand(min..max)
+    @hp = @max_hp
+  end
+
+  def fetch_exp(min, max)
+    @exp = rand(min..max)
+  end
+
+  def fetch_dmg(min, max)
+    @dmg_min = min
+    @dmg_max = max
+    @dmg = rand(@dmg_min..@dmg_max)
+  end
+
+  def fetch_evasion(chance)
+    @evasion = chance
+    @evade_chance = rand(1..@evasion)
+  end
+
+  def fetch_accuracy(chance)
+    @accuracy = chance
+    @hit_chance = rand(1..@accuracy)
+  end
 end
 
 class Ghost < Enemy
   def initialize
     @name = 'Ghost'
-    @max_hp = rand(5..15); @hp = @max_hp
-    @exp = rand(4..8)
-    @dmg_min = 2; @dmg_max = 5
-    @evasion = 60; @evade_chance = rand(1..@evasion)
-    @accuracy = 30; @hit_chance = rand(1..@accuracy)
+    fetch_hp(5, 15)
+    fetch_exp(4, 8)
+    fetch_dmg(2, 5)
+    fetch_evasion(60)
+    fetch_accuracy(30)
     @skills = ['Crippling Fear']
     @item_drop = [StainedSheet.new]
   end
-  attr_reader :name, :skills, :appear_chance, :item_drop
-  attr_accessor :lvl, :hp, :dmg_min, :dmg_max, :dmg, :evasion, :accuracy
+  attr_accessor :hp, :dmg, :dmg_min, :dmg_max
+  attr_accessor :evasion, :evade_chance, :accuracy, :hit_chance
+  attr_reader :name, :skills, :item_drop, :exp, :max_hp
 end
 
 class Ghoul < Enemy
   def initialize
     @name = 'Ghoul'
-    @max_hp = rand(9..11); @hp = @max_hp
-    @exp = rand(6..10)
-    @dmg_min = 7; @dmg_max = 11; @dmg = rand(@dmg_min..@dmg_max)
-    @evasion = 15; @evade_chance = rand(1..@evasion)
-    @accuracy = 65; @hit_chance = rand(1..@accuracy)
+    fetch_hp(9, 11)
+    fetch_exp(6, 10)
+    fetch_dmg(7, 11)
+    fetch_evasion(15)
+    fetch_accuracy(65)
     @skills = []
     @item_drop = [GhoulSkin.new]
   end
-  attr_reader :name, :skills, :appear_chance, :item_drop
-  attr_accessor :lvl, :hp, :dmg_min, :dmg_max, :dmg, :evasion, :accuracy
+  attr_accessor :hp, :dmg, :dmg_min, :dmg_max
+  attr_accessor :evasion, :evade_chance, :accuracy, :hit_chance
+  attr_reader :name, :skills, :item_drop, :exp, :max_hp
 end
 
 class Dragon < Enemy
   def initialize
     @name = 'Dragon'
-    @max_hp = rand(15..24)
-    @hp = @max_hp
-    @exp = rand(11..16)
-    @dmg_min = 12
-    @dmg_max = 15
-    @dmg = rand(@dmg_min..@dmg_max)
-    @evasion = 10
-    @evade_chance = rand(1..@evasion)
-    @accuracy = 40
-    @hit_chance = rand(1..@accuracy)
+    fetch_hp(13, 24)
+    fetch_exp(12, 20)
+    fetch_dmg(9, 18)
+    fetch_evasion(20)
+    fetch_accuracy(80)
     @skills = ['Breathe Fire']
     @item_drop = [DragonEye.new]
   end
-  attr_reader :name, :skills, :appear_chance, :item_drop
-  attr_accessor :lvl, :hp, :dmg_min, :dmg_max, :dmg, :evasion, :accuracy
+  attr_accessor :hp, :dmg, :dmg_min, :dmg_max
+  attr_accessor :evasion, :evade_chance, :accuracy, :hit_chance
+  attr_reader :name, :skills, :item_drop, :exp, :max_hp
 end
 
 class Vampire < Enemy
   def initialize
-    @name = 'Vampire'
-    @max_hp = rand(8..14); @hp = @max_hp
-    @exp = rand(9..13)
-    @dmg_min = 8; @dmg_max = 12; @dmg = rand(@dmg_min..@dmg_max)
-    @evasion = 30; @evade_chance = rand(1..@evasion)
-    @accuracy = 80; @hit_chance = rand(1..@accuracy)
+    @name = 'Dragon'
+    fetch_hp(8, 14)
+    fetch_exp(9, 13)
+    fetch_dmg(8, 12)
+    fetch_evasion(30)
+    fetch_accuracy(80)
     @skills = ['Ritual of Blood Moon', 'Invisibility']
     @item_drop = [VampireTeeth.new]
   end
-  attr_reader :name, :skills, :appear_chance, :item_drop
-  attr_accessor :lvl, :hp, :dmg_min, :dmg_max, :dmg, :evasion, :accuracy
+  attr_accessor :hp, :dmg, :dmg_min, :dmg_max
+  attr_accessor :evasion, :evade_chance, :accuracy, :hit_chance
+  attr_reader :name, :skills, :item_drop, :exp, :max_hp
 end
