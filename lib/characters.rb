@@ -11,6 +11,10 @@ class Player
     fetch_items
     fetch_char
     fetch_state
+    @item_fields = [@weapon, @helmet, @armor,
+                    @gloves, @cape, @boots,
+                    @leggings, @ring_left, @ring_right,
+                    @amulet, @belt]
   end
 
   private
@@ -29,16 +33,16 @@ class Player
   def fetch_items
     @items = [SmallHealthPotion.new]
     @weapon = Weapon.new('Handmade Dagger', 2)
-    @helmet = NoDefenseItem.new('no helmet')
-    @armor = NoDefenseItem.new('no armor')
-    @gloves = NoDefenseItem.new('no gloves')
-    @cape = NoDexterityItem.new('no cape')
-    @boots = NoDefenseItem.new('no boots')
-    @leggings = NoDefenseItem.new('no leggings')
-    @ring_left = NoVarItem.new('no ring on left hand')
-    @ring_right = NoVarItem.new('no ring on right hand')
-    @amulet = NoVarItem.new('no amulet')
-    @belt = NoVarItem.new('no belt')
+    @helmet = Helmet.new('no helmet', 0)
+    @armor = Armor.new('no armor', 0)
+    @gloves = Gloves.new('no gloves', 0)
+    @cape = Cape.new('no cape', 0)
+    @boots = Boots.new('no boots', 0)
+    @leggings = Leggings.new('no leggings', 0)
+    @ring_left = RingLeft.new('no ring on left hand', '*nothing*', 0)
+    @ring_right = RingRight.new('no ring on right hand', '*nothing*', 0)
+    @amulet = Amulet.new('no amulet', '*nothing*', 0)
+    @belt = Belt.new('no belt', '*nothing*', 0)
   end
   # rubocop:enable Metrics/MethodLength
   # rubocop:enable Metrics/AbcSize
@@ -60,9 +64,9 @@ class Player
   def fetch_def
     @base_def_min = 0
     @base_def_max = 4
-    @armor_value = @helmet.def_increase + @armor.def_increase +
-                   @gloves.def_increase + @boots.def_increase +
-                   @leggings.def_increase
+    @armor_value = @helmet.increase_value + @armor.increase_value +
+                   @gloves.increase_value + @boots.increase_value +
+                   @leggings.increase_value
     @def_min = @base_def_min + @armor_value
     @def_max = @base_def_max + @armor_value
   end
@@ -110,28 +114,32 @@ class Player
   def inspect_items
     puts "\nInspecting items of #{$player.class}: #{$player.name}..."
     sleep(1)
-    puts "\nWeapon:\n#{@weapon.name} - increases damage dealt by "\
-         "#{@weapon.dmg_increase}"
-    puts "\nHelmet:\n#{@helmet.name} - increases defense by "\
-         "#{@helmet.def_increase}"
-    puts "\nArmor:\n#{@armor.name} - increases defense by "\
-         "#{@armor.def_increase}"
-    puts "\nGloves:\n#{@gloves.name} - increases defense by "\
-         "#{@gloves.def_increase}"
-    puts "\nCape:\n#{@cape.name} - increases dexterity by "\
-         "#{@cape.dex_increase}"
-    puts "\nBoots:\n#{@boots.name} - increases defense by "\
-         "#{@boots.def_increase}"
-    puts "\nLeggings:\n#{@leggings.name} - increases defense by "\
-         "#{@leggings.def_increase}"
-    puts "\nRing (left hand):\n#{@ring_left.name} - increases "\
-         "#{@ring_left.increase_type} by #{@ring_left.increase_value}"
-    puts "\nRing (right hand):\n#{@ring_right.name} - increases "\
-         "#{@ring_right.increase_type} by #{@ring_right.increase_value}"
-    puts "\nAmulet:\n#{@amulet.name} - increases #{@amulet.increase_type} "\
-         "by #{@amulet.increase_value}"
-    puts "\nBelt:\n#{@belt.name} - increases #{@belt.increase_type} by "\
-         "#{@belt.increase_value}"
+    $player.item_fields.each do |item|
+      puts "\n#{item.type}: #{item.name} - increases #{item.increase_type} "\
+           "by #{item.increase_value}"
+    end
+    # puts "\nWeapon:\n#{@weapon.name} - increases damage dealt by "\
+    #      "#{@weapon.dmg_increase}"
+    # puts "\nHelmet:\n#{@helmet.name} - increases defense by "\
+    #      "#{@helmet.def_increase}"
+    # puts "\nArmor:\n#{@armor.name} - increases defense by "\
+    #      "#{@armor.def_increase}"
+    # puts "\nGloves:\n#{@gloves.name} - increases defense by "\
+    #      "#{@gloves.def_increase}"
+    # puts "\nCape:\n#{@cape.name} - increases dexterity by "\
+    #      "#{@cape.dex_increase}"
+    # puts "\nBoots:\n#{@boots.name} - increases defense by "\
+    #      "#{@boots.def_increase}"
+    # puts "\nLeggings:\n#{@leggings.name} - increases defense by "\
+    #      "#{@leggings.def_increase}"
+    # puts "\nRing (left hand):\n#{@ring_left.name} - increases "\
+    #      "#{@ring_left.increase_type} by #{@ring_left.increase_value}"
+    # puts "\nRing (right hand):\n#{@ring_right.name} - increases "\
+    #      "#{@ring_right.increase_type} by #{@ring_right.increase_value}"
+    # puts "\nAmulet:\n#{@amulet.name} - increases #{@amulet.increase_type} "\
+    #      "by #{@amulet.increase_value}"
+    # puts "\nBelt:\n#{@belt.name} - increases #{@belt.increase_type} by "\
+    #      "#{@belt.increase_value}"
     puts "\nItems:"
     item_show_loop
   end
@@ -226,7 +234,7 @@ class Player
     puts "\nLevel gained!\nYour level is now #{@lvl}." if @lvl > @old_lvl
   end
 
-  attr_reader :name
+  attr_reader :name, :item_fields
   attr_accessor :lvl, :exp
   attr_accessor :location
   attr_accessor :hp, :max_hp
