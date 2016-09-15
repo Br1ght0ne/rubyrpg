@@ -7,8 +7,8 @@ include TextBlocks
 include Action
 
 # NOTE: Chances and classes
-$enemy_appear_chance = Hash['Ghost' => 60, 'Ghoul' => 40,
-                            'Dragon' => 25, 'Vampire' => 40]
+$enemy_appear_chance = Hash['Ghost' => 70, 'Ghoul' => 50,
+                            'Dragon' => 35, 'Vampire' => 50]
 $enemy_class = Hash['Ghost' => Ghost, 'Ghoul' => Ghoul,
                     'Dragon' => Dragon, 'Vampire' => Vampire]
 $exp_levels = {

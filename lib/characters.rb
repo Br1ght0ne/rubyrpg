@@ -99,7 +99,6 @@ class Player
   def inspect_items
     puts "\nInspecting items of #{$player.class}: #{$player.name}..."
     sleep(1)
-    # FIXME:
     @equipment.list
     puts "\nItems:"
     item_show_loop
