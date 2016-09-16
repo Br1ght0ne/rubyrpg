@@ -264,7 +264,7 @@ class Enemy
     $isFight = true
     sleep(1.5)
     puts "\nYour HP: #{$player.hp} | #{@name}\'s HP: #{@hp}"
-    get_fight_action
+    fight_action
   end
 
   def attack_player
@@ -281,7 +281,7 @@ class Enemy
 
   def check_for_player_death
     if $player.hp > 0
-      get_fight_action
+      fight_action
     else
       $player = nil
       puts "You were killed by #{@name}.\n"
