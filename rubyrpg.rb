@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 # My additions
 require_relative 'lib/characters'
 require_relative 'lib/zones'
