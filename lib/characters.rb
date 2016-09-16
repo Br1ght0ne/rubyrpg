@@ -3,7 +3,6 @@ require_relative 'modules'
 require_relative 'items'
 
 # Class for handling player state and interactions with world/self
-# rubocop:disable ClassLength
 class Player
   include LoadAndSave
 
@@ -71,8 +70,6 @@ class Player
     @accuracy = chance
     @hit_chance = rand(1..@accuracy)
   end
-
-  # rubocop:disable Style/CaseEquality
   def fetch_exp(exp)
     @exp = exp
     @lvl = $exp_levels.select { |level| level === @exp }.values.first
@@ -105,9 +102,6 @@ class Player
   end
 
   private
-
-  # rubocop:disable MethodLength
-  # rubocop:disable AbcSize
   def item_show_loop
     i = 0
     loop do
@@ -217,8 +211,6 @@ class Player
       $enemy.send(:attack_player)
     end
   end
-
-  # rubocop:disable CaseEquality
   def change_experience
     @old_lvl = @lvl
     @exp += $enemy.exp
@@ -281,7 +273,11 @@ class Enemy
 
   def check_for_player_death
     if $player.hp > 0
+<<<<<<< HEAD
       fight_action
+=======
+      get_fight_action
+>>>>>>> c7f7c2a32ef1ac762c8eb917789204d5d19e287e
     else
       $player = nil
       puts "You were killed by #{@name}.\n"
