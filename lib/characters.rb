@@ -70,6 +70,7 @@ class Player
     @accuracy = chance
     @hit_chance = rand(1..@accuracy)
   end
+
   def fetch_exp(exp)
     @exp = exp
     @lvl = $exp_levels.select { |level| level === @exp }.values.first
@@ -98,11 +99,36 @@ class Player
     sleep(1)
     @equipment.list
     puts "\nItems:"
-    item_show_loop
+    show_inventory
   end
 
   private
-  def item_show_loop
+
+  def show_inventory
+    i = 0
+    show_items
+    begin
+      puts "\nType the code of the item you want to use"\
+           "(or 'exit' to quit items)"
+      user_code = gets.chomp
+      if user_code == 'exit'
+        check_for_fight
+      else
+        i = 0
+        use_item(user_code)
+      end # if
+    rescue NoMethodError
+      puts 'Please enter valid item code.'
+      sleep(1.5)
+      retry
+    end # begin
+  end # show_inventory
+  # rubocop:enable AbcSize
+  # rubocop:enable MethodLength
+
+  public
+
+  def show_items
     i = 0
     loop do
       if $player.inventory.items[i].class == NilClass
@@ -111,38 +137,24 @@ class Player
       end # if
       puts "#{$player.inventory.items[i].name} "\
            "(#{$player.inventory.items[i].usage}) - "\
-           "#{$player.inventory.items[i].desc}"
+           '{$player.inventory.items[i].desc}'
       i += 1
     end # loop
-    begin
-      puts "\nType the code of the item you want to use "\
-           "(or 'exit' to quit items)"
-      user_code = gets.chomp
-      if user_code == 'exit'
-        check_for_fight
-      else
-        i = 0
-        loop do
-          if $player.inventory.items[i].code == user_code
-            $player.inventory.items[i].use
-            if $player.inventory.items[i].is_consumable
-              $player.inventory.items.delete_at(i)
-            end
-            check_for_fight
-          end # if
-          i += 1
-        end # loop
-      end # if
-    rescue NoMethodError
-      puts 'Please enter valid item code.'
-      sleep(1.5)
-      retry
-    end # begin
-  end # item_show_loop
-  # rubocop:enable AbcSize
-  # rubocop:enable MethodLength
+  end
 
-  public
+  def use_item(code)
+    i = 0
+    loop do
+      if $player.inventory.items[i].code == code
+        $player.inventory.items[i].use
+        if $player.inventory.items[i].is_consumable
+          $player.inventory.items.delete_at(i)
+        end
+        check_for_fight
+      end # if
+      i += 1
+    end # loop
+  end
 
   def inspect_skills
     puts 'Not implemented yet.'
@@ -211,6 +223,7 @@ class Player
       $enemy.send(:attack_player)
     end
   end
+
   def change_experience
     @old_lvl = @lvl
     @exp += $enemy.exp
@@ -273,11 +286,7 @@ class Enemy
 
   def check_for_player_death
     if $player.hp > 0
-<<<<<<< HEAD
       fight_action
-=======
-      get_fight_action
->>>>>>> c7f7c2a32ef1ac762c8eb917789204d5d19e287e
     else
       $player = nil
       puts "You were killed by #{@name}.\n"
