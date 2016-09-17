@@ -105,56 +105,57 @@ class Player
   private
 
   def show_inventory
-    i = 0
     show_items
     begin
-      puts "\nType the code of the item you want to use"\
-           "(or 'exit' to quit items)"
-      user_code = gets.chomp
-      if user_code == 'exit'
-        check_for_fight
-      else
-        i = 0
-        use_item(user_code)
-      end # if
+      code = ask_for_code
+      use_or_die(code)
     rescue NoMethodError
       puts 'Please enter valid item code.'
       sleep(1.5)
       retry
-    end # begin
+    end # resuce block
   end # show_inventory
   # rubocop:enable AbcSize
   # rubocop:enable MethodLength
 
-  public
+  def ask_for_code
+    puts "\nType the code of the item you want to use "\
+         "(or 'exit' to quit items)"
+    gets.chomp
+  end
+
+  def use_or_die(code)
+    case code
+    when 'exit'
+      check_for_fight
+    else
+      use_item(code)
+    end # case
+  end
 
   def show_items
     i = 0
     loop do
-      if $player.inventory.items[i].class == NilClass
-        i = 0
-        break
-      end # if
-      puts "#{$player.inventory.items[i].name} "\
-           "(#{$player.inventory.items[i].usage}) - "\
-           '{$player.inventory.items[i].desc}'
+      break if @inventory.items[i].nil?
+      puts "#{@inventory.items[i].name} "\
+           "(#{@inventory.items[i].usage}) - "\
+           "#{@inventory.items[i].desc}"
       i += 1
     end # loop
   end
 
   def use_item(code)
     i = 0
+    items = @inventory.items
     loop do
-      if $player.inventory.items[i].code == code
-        $player.inventory.items[i].use
-        if $player.inventory.items[i].is_consumable
-          $player.inventory.items.delete_at(i)
-        end
-        check_for_fight
-      end # if
+      items[i].use if items[i].code == code
+      items.delete_at(i) if items[i].is_consumable
+      check_for_fight
       i += 1
     end # loop
   end
+
+  public
 
   def inspect_skills
     puts 'Not implemented yet.'

@@ -2,6 +2,19 @@ module TextBlocks
   def start
     include LoadAndSave
     require_relative 'build_info'
+    print_logo
+    greet_user
+    new_or_load = gets.chomp
+    { 's' => game_begin, 'l' => load_game }[new_or_load]
+  end
+
+  def greet_user
+    puts "Welcome to #{$game_name} #{$game_version} #{$game_version_tag}! \n"
+    sleep(1.5)
+    puts "\ns - start new adventure | l - load existing character"
+  end
+
+  def print_logo
     puts "\n"\
          "      #######     \n"\
          "     #&&&&&&&#    \n"\
@@ -16,19 +29,8 @@ module TextBlocks
          "  # #  #    #  #  \n"\
          "  #  # #    ####  \n"\
          "\n"
-    puts "Welcome to #{$game_name} #{$game_version} #{$game_version_tag}! \n"
-    sleep(1.5)
-    puts "\ns - start new adventure | l - load existing character"
-    new_or_load = gets.chomp
-    case new_or_load
-    when 's'
-      game_begin
-    when 'l'
-      load_game
-      sleep(1.5)
-      player_action if $loaded
-    end
   end
+  # rubocop:enable MethodLength
 end
 
 module Action
@@ -179,7 +181,8 @@ module LoadAndSave
       File.open("saves/#{all_saves[loadNumber.to_i]}", 'r') { |from_file| $player = Marshal.load(from_file) }
       puts "\nLoaded player: #{$player.name} (exp: #{$player.exp})."
       File.delete("saves/#{all_saves[loadNumber.to_i]}")
-      $loaded = true
+      sleep(1.5)
+      player_action
     end
   end
 end
