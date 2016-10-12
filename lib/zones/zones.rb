@@ -1,32 +1,26 @@
-require_relative 'characters'
-require_relative 'modules'
+require_relative('zone_generator')
+require_relative('../modules/numbers')
+require_relative('../characters/enemies')
+
 class Zone
-    public
+  attr_reader :name
 
   def check_for_enemy(enemy_name)
-      if rand(1..100) <= $enemy_appear_chance[enemy_name]
-          $enemy = $enemy_class[enemy_name].new
+    if rand(1..100) <= Numbers::ENEMY_APPEAR_CHANCE[enemy_name]
+      $enemy = Enemy.const_get(enemy_name).new
           $enemy.spawn
-      end
+    end
+  end
+
+  def to_s
+    "Zone #{self.name}"
   end
 end
 
-class ZoneGenerator
-    def initialize
-        @@zones = [Graveyard.new, Forest.new, Cave.new, Castle.new]
-        @generated_zone = @@zones.sample
-        while @generated_zone.class == $current_zone.class
-            @generated_zone = @@zones.sample
-        end
-    end
-    attr_reader :zones; attr_reader :generated_zone
-end
-
 class StartZone < Zone
-    def initialize
-        @name = 'Start Zone'
-    end
-    attr_reader :name
+  def initialize
+    @name = 'Start Zone'
+  end
 end
 
 class Graveyard < Zone
