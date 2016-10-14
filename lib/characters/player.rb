@@ -114,7 +114,6 @@ class Player
     puts "\nYour character wanders along... Until he sees #{user_zone.desc}."
     $current_zone = user_zone
     @location = $current_zone.name
-    $stderr.puts "$current_zone = " + $current_zone.to_s + ", starting $current_zone#check_for_enemy..."
     $current_zone.check_for_enemy(user_zone.enemy_name)
   end
 

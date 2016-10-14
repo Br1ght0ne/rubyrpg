@@ -6,7 +6,7 @@ class Zone
   attr_reader :name
 
   def check_for_enemy(enemy_name)
-    if rand(1..100) <= Numbers::ENEMY_APPEAR_CHANCE[enemy_name]
+    if rand(1..100) <= Numbers::ENEMY_APPEAR_CHANCE[enemy_name.to_sym]
       $enemy = Enemy.const_get(enemy_name).new
           $enemy.spawn
     end
