@@ -1,6 +1,6 @@
 # RubyRPG
 
-## Download last development version: [Linux](https://bitbucket.org/lightshade/rubyrpg/downloads/rubyrpg-0.7.4-linux.tar.gz) | [Windows (in dev)]()
+## Download last development version: [Linux](https://github.com/filalex77/rubyrpg/releases/download/0.8.0-alpha/rubyrpg-0.8.0-alpha-linux.tar.gz) | [Windows (in dev)](https://github.com/filalex77/rubyrpg/releases/download/0.8.0-alpha/rubyrpg-0.8.0-alpha.exe)
 
 ## Installation for Linux
 #### VERSION is a placeholder
