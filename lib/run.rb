@@ -18,14 +18,14 @@ def start
   print_logo
   greet_user
   new_or_load = gets.chomp
-  {'s' => game_begin, 'l' => load_game}[new_or_load]
+  new_or_load == 'l' ? load_game : game_begin
 end
 
 # NOTE: Beginning of the game
 start
 
 # TODO: Fix issues
-# 1. Saving
-# 2. Loading
-# 3. MORE HAND TESTING
+# 1. Saving (done!)
+# 2. Loading (done!)
+# 3. MORE HAND TESTING (done!)
 # 4. Write UT, please.
