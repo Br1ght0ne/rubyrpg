@@ -6,7 +6,10 @@ class HealthPotion
   end
 
   def use
-    raise RuntimeError, "You can\'t use health potions while you have full HP.", caller if $player.hp == $player.max_hp
+    if $player.hp == $player.max_hp
+      raise RuntimeError, "You can\'t use health potions while "\
+      'you have full HP.', caller
+    end
     healed = heal
     puts "Restored #{healed} HP."
   rescue => ex
@@ -19,7 +22,7 @@ class HealthPotion
     hp_before_heal = $player.hp
     $player.hp += @hp_restore
     $player.hp = $player.max_hp if $player.hp > $player.max_hp
-    healed = $player.hp - hp_before_heal
+    $player.hp - hp_before_heal
   end
 end
 

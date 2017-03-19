@@ -42,5 +42,4 @@ class Equipment
     @amulet = Amulet.new('no amulet', '*nothing*', 0)
     @belt = Belt.new('no belt', '*nothing*', 0)
   end
-
 end

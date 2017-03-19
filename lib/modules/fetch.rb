@@ -32,11 +32,11 @@ module Fetch
   end
 
   def calculate_armor_value
-    value = @equipment.helmet.increase_value +
-        @equipment.armor.increase_value +
-        @equipment.gloves.increase_value +
-        @equipment.boots.increase_value +
-        @equipment.leggings.increase_value
+    @equipment.helmet.increase_value +
+      @equipment.armor.increase_value +
+      @equipment.gloves.increase_value +
+      @equipment.boots.increase_value +
+      @equipment.leggings.increase_value
   end
 
   def fetch_dmg(min, max)
@@ -56,7 +56,9 @@ module Fetch
 
   def fetch_exp(exp)
     @exp = exp
-    @lvl = Numbers::EXP_LEVELS.select { |level| level === @exp }.values.first
+    @lvl = Numbers::EXP_LEVELS.select do |level|
+      level.include?(@exp)
+    end.values.first
     @next_lvl = @lvl + 1
     @next_level_exp = Numbers::EXP_LEVELS.key(@next_lvl).begin.to_i
     @to_next_level = @next_level_exp - @exp

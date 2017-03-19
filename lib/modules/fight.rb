@@ -1,27 +1,16 @@
 module Fight
+  @action_list = { 'a' => :attack_enemy,
+                   'i' => :inspect_items,
+                   's' => :inspect_skills,
+                   'x' => :save_game }
   def fight_action
     $is_fight = true
     puts "\nWhat do you want to do?\na - attack enemy | i - inspect your items"\
            ' | s - inspect your skills | x - save and exit'
     user_action = gets.chomp
-    case user_action
-      when 'a'
-        $player.attack_enemy
-      when 'i'
-        $player.inspect_items
-        sleep(2)
-        player_action
-      when 's'
-        $player.inspect_skills
-        sleep(2)
-        player_action
-      when 'x'
-        $player.save_game
-        sleep(1)
-        exit
-      else
-        fight_action
-    end
+    $player.send(@action_list[user_action])
+    sleep(2)
+    user_action == 'x' ? exit : fight_action
   end
 
   def check_for_fight

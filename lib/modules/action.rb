@@ -11,44 +11,27 @@ module Action
   end
 
   def player_action
+    action_list = { 'd' => :display_player_info,
+                    'i' => :inspect_items,
+                    'm' => :move,
+                    'x' => :save_game }
     puts "\nWhat do you want to do?\nd - display information about you | "\
          "i - inspect your items\nm - move to some location | x - exit game"
     user_action = gets.chomp
-    case user_action
-      when 'd'
-        $player.display_player_info
-        sleep(2)
-        player_action
-      when 'i'
-        $player.inspect_items
-        sleep(2)
-        player_action
-      when 'm'
-        $player.move
-        sleep(2)
-        player_action
-      when 's'
-        $player.save_game
-        sleep(2)
-        player_action
-      when 'x'
-        $player.save_game
-        sleep(1)
-        exit
-      else
-        player_action
-    end
+    $player.send(action_list[user_action])
+    sleep(2)
+    user_action == 'x' ? exit : player_action
   end
 
   def check_for_restart
-    puts 'Do you want to start over? y/n'; restart = gets.chomp
-    case restart
-      when 'y' || 'yes'
-        start
-      else
-        puts 'Goodbye, though!'
-        sleep(1)
-        exit
+    puts 'Do you want to start over? y/n'
+    restart = gets.chomp
+    if restart[0] == 'y'
+      start
+    else
+      puts 'Goodbye, though!'
+      sleep(1)
+      exit
     end
   end
 end

@@ -48,6 +48,7 @@ class Player
       code = ask_for_code
       use_or_die(code)
     rescue NoMethodError
+      #=> rescue
       puts 'Please enter valid item code.'
       sleep(1.5)
       retry
@@ -66,10 +67,10 @@ class Player
 
   def use_or_die(code)
     case code
-      when 'exit'
-        check_for_fight
-      else
-        use_item(code)
+    when 'exit'
+      check_for_fight
+    else
+      use_item(code)
     end # case
   end
 
@@ -110,7 +111,7 @@ class Player
     generate_zones(4)
     puts "\nZones you can travel to:"
     print_zones
-    user_zone = get_zone
+    user_zone = zone
     puts "\nYour character wanders along... Until he sees #{user_zone.desc}."
     $current_zone = user_zone
     @location = $current_zone.name
@@ -133,7 +134,7 @@ class Player
   end
 
   # @return [zone]
-  def get_zone
+  def zone
     user_zone = gets.chomp
     $move_zones[user_zone.to_i]
   end
@@ -167,7 +168,7 @@ class Player
   def change_experience
     @old_lvl = @lvl
     @exp += $enemy.exp
-    @lvl = Numbers::EXP_LEVELS.select { |exp| exp === @exp }.values.first
+    @lvl = Numbers::EXP_LEVELS.select { |exp| exp.include?(@exp) }.values.first
     @next_lvl = @lvl + 1
     @next_level_exp = Numbers::EXP_LEVELS.key(@next_lvl).begin
     @to_next_level = @next_level_exp - @exp

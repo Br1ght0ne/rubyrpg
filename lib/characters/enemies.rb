@@ -25,15 +25,14 @@ class Enemy
 
   def drop
     puts "\nUpon death #{$enemy.name} dropped:"
-    self.item_drop.each do |item|
+    item_drop.each do |item|
       puts "#{item.name} (#{item.type})"
     end
     puts "\na - take all | d - don\'t take"
     take_item = gets.chomp
-    if take_item == 'a'
-      self.item_drop.each do |item|
-        $player.inventory.new_item(item)
-      end
+    return if take_item != 'a'
+    item_drop.each do |item|
+      $player.inventory.new_item(item)
     end
   end
 

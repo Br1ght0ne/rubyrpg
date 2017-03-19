@@ -1,18 +1,13 @@
 module LoadAndSave
   def save_game
-    def save_method
-      t = Time.now
-      stamp = t.strftime('%Y%m%d%H%M%S')
-      File.open("saves/save_#{$player.name}_#{$player.object_id}_#{stamp}.sav", 'w') { |to_file| Marshal.dump($player, to_file) }
-      puts "\nSaved!"
+    Dir.mkdir('saves') unless Dir.exist?('saves')
+    t = Time.now
+    stamp = t.strftime('%Y%m%d%H%M%S')
+    File.open("saves/save_#{$player.name}_"\
+              "#{$player.object_id}_#{stamp}.sav", 'w') do |to_file|
+      Marshal.dump($player, to_file)
     end
-
-    if Dir.exist?('saves')
-      save_method
-    else
-      Dir.mkdir('saves')
-      save_method
-    end
+    puts "\nSaved!"
   end
 
   def load_game
@@ -24,25 +19,27 @@ module LoadAndSave
       puts 'Do you want to start a new game? y/n'
       start_new = gets.chomp
       case start_new
-        when 'y'
-          game_begin
-        else
-          puts "\nOkay then. Farewell!"
-          exit
+      when 'y'
+        game_begin
+      else
+        puts "\nOkay then. Farewell!"
+        exit
       end
     else
-      all_saves.each_with_index do |record, index|
-        shown_index = index + 1
-        puts "#{record} - #{shown_index}"
-      end
-      puts "\nEnter the number of the save file:"
-      shown_load_number = gets.chomp
-      load_number = shown_load_number.to_i - 1
-      File.open("saves/#{all_saves[load_number.to_i]}", 'r') { |from_file| $player = Marshal.load(from_file) }
-      puts "\nLoaded player: #{$player.name} (exp: #{$player.exp})."
-      File.delete("saves/#{all_saves[load_number.to_i]}")
+      show_saves(all_saves)
       sleep(1.5)
       player_action
     end
+  end
+
+  def show_saves(_saves)
+    all_saves.each_with_index { |rec, i| puts "#{rec} - #{i + 1}" }
+    puts "\nEnter the number of the save file:"
+    load_number = gets.chomp.to_i - 1
+    File.open("saves/#{all_saves[load_number.to_i]}", 'r') do |from_file|
+      $player = Marshal.load(from_file)
+    end
+    puts "\nLoaded player: #{$player.name} (exp: #{$player.exp})."
+    File.delete("saves/#{all_saves[load_number.to_i]}")
   end
 end

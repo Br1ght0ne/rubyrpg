@@ -1,4 +1,5 @@
 module TextBlocks
+  # rubocop:disable Metrics/MethodLength
   def print_logo
     puts "\n"\
          "      #######     \n"\
